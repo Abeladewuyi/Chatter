@@ -1,0 +1,58 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/*
+  Custom design tokens, matching the dark/purple mockup Abel approved.
+  Defining them in @theme means we can use classes like `bg-surface` or `text-accent`
+  anywhere in the app, instead of repeating raw hex codes everywhere.
+*/
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-bg: var(--app-bg);
+  --color-surface: var(--app-surface);
+  --color-surface-2: var(--app-surface-2);
+  --color-border: var(--app-border);
+
+  --color-accent: var(--app-accent);
+  --color-accent-hover: var(--app-accent-hover);
+
+  --color-text-primary: var(--app-text-primary);
+  --color-text-secondary: var(--app-text-secondary);
+  --color-text-muted: var(--app-text-muted);
+}
+
+:root {
+  --app-bg: #0a0a0f;
+  --app-surface: #131320;
+  --app-surface-2: #1a1a2a;
+  --app-border: #26263a;
+  --app-accent: #7c3aed;
+  --app-accent-hover: #6d28d9;
+  --app-text-primary: #f4f4f6;
+  --app-text-secondary: #b8b8c7;
+  --app-text-muted: #9292a4;
+}
+
+[data-theme="light"] {
+  --app-bg: #f7f7fb;
+  --app-surface: #ffffff;
+  --app-surface-2: #f1f1f6;
+  --app-border: #dedee8;
+  --app-accent: #6d28d9;
+  --app-accent-hover: #5b21b6;
+  --app-text-primary: #18181f;
+  --app-text-secondary: #575767;
+  --app-text-muted: #747483;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
