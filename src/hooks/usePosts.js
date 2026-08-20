@@ -1,24 +1,37 @@
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 
 /**
- * For now this shows ALL posts, newest first — a simple global feed.
- * In Stage 4 we'll filter this down to only posts from people you follow.
+ * Firestore's `in` operator only accepts up to 10 values. Fine for a
+ * practice app; a real app with large follow lists needs a different
+ * approach (e.g. a fan-out feed collection via Cloud Functions).
  */
-export function usePosts() {
+export function usePosts(authorIds) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const postsQuery = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50));
+    if (!authorIds || authorIds.length === 0) {
+      setPosts([]);
+      setLoading(false);
+      return;
+    }
+
+    const cappedIds = authorIds.slice(0, 10);
+
+    const postsQuery = query(
+      collection(db, "posts"),
+      where("authorId", "in", cappedIds),
+      orderBy("createdAt", "desc"),
+      limit(50)
+    );
 
     const unsubscribe = onSnapshot(
       postsQuery,
       (snapshot) => {
-        const postList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setPosts(postList);
+        setPosts(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         setLoading(false);
       },
       (err) => {
@@ -28,7 +41,7 @@ export function usePosts() {
     );
 
     return unsubscribe;
-  }, []);
+  }, [JSON.stringify(authorIds)]);
 
   return { posts, loading, error };
 }

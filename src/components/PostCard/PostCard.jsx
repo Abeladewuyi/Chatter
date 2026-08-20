@@ -84,7 +84,7 @@ export default function PostCard({ post }) {
         </button>
       </div>
 
-      {showComments && <CommentSection postId={post.id} />}
+{showComments && <CommentSection postId={post.id} autoFocus />}
     </div>
   );
 }

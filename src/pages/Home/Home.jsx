@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { LogOut, Plus } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { logOut } from "../../firebase/auth";
+import { useFollowingIds } from "../../hooks/useFollowingIds";
 import { usePosts } from "../../hooks/usePosts";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import PostCard from "../../components/PostCard/PostCard";
@@ -9,8 +10,13 @@ import chatterLogo from "../../assets/chatter-logo.png";
 
 export default function Home() {
   const { user } = useAuth();
-  const { profile } = useUserProfile(user.uid);
-  const { posts, loading, error } = usePosts();
+  const uid = user?.uid;
+
+  const { profile } = useUserProfile(uid);
+  const { followingIds, loading: loadingFollowing } = useFollowingIds(uid);
+  const authorIds = uid ? [...new Set([uid, ...followingIds])] : [];
+  const { posts, loading: loadingPosts, error } = usePosts(authorIds);
+  const loading = loadingFollowing || loadingPosts;
 
   const displayName = profile?.displayName || "You";
   const username = profile?.username || "";
@@ -160,22 +166,31 @@ export default function Home() {
             </p>
           )}
 
-          {!loading && !error && posts.length === 0 && (
+          {!loading && !error && posts.length === 0 && followingIds.length === 0 && (
             <div className="rounded-2xl border border-border bg-surface p-8 text-center">
               <h2 className="text-lg font-semibold text-text-primary">
-                Your feed is quiet
+                Your feed is empty
               </h2>
               <p className="mt-2 text-sm text-text-secondary">
-                Share the first post with your community.
+                Follow some people to see their posts here.
               </p>
 
-              <Link
-                to="/create-post"
-                className="mt-5 inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
-              >
-                <Plus size={16} />
-                Create post
-              </Link>
+              <div className="mt-5">
+                <Link
+                  to="/explore"
+                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
+                >
+                  Find people to follow →
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {!loading && !error && posts.length === 0 && followingIds.length > 0 && (
+            <div className="rounded-2xl border border-border bg-surface p-8 text-center">
+              <p className="text-sm text-text-secondary">
+                No posts yet from people you follow.
+              </p>
             </div>
           )}
 

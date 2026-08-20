@@ -1,14 +1,39 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Heart } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useComments } from "../../hooks/useComments";
+import { useCommentLike } from "../../hooks/useCommentLike";
 
-export default function CommentSection({ postId }) {
+function CommentLikeButton({ postId, commentId, uid, likesCount }) {
+  const { isLiked, toggleLike } = useCommentLike(postId, commentId, uid);
+
+  return (
+    <button
+      onClick={toggleLike}
+      className={`flex items-center gap-1 text-xs hover:text-accent ${
+        isLiked ? "text-accent" : "text-text-muted"
+      }`}
+    >
+      <Heart size={12} fill={isLiked ? "currentColor" : "none"} />
+      {likesCount > 0 && likesCount}
+    </button>
+  );
+}
+
+export default function CommentSection({ postId, autoFocus = false }) {
   const { user } = useAuth();
   const { profile } = useUserProfile(user.uid);
   const { comments, loading, addComment, deleteComment } = useComments(postId);
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (autoFocus) {
+      inputRef.current?.focus();
+    }
+  }, [autoFocus]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,6 +49,7 @@ export default function CommentSection({ postId }) {
         text: text.trim(),
       });
       setText("");
+      inputRef.current?.focus();
     } catch (err) {
       console.error(err);
     } finally {
@@ -54,6 +80,14 @@ export default function CommentSection({ postId }) {
                     {comment.authorDisplayName}
                   </span>{" "}
                   <span className="text-sm text-text-primary">{comment.text}</span>
+                  <div className="mt-1">
+                    <CommentLikeButton
+                      postId={postId}
+                      commentId={comment.id}
+                      uid={user.uid}
+                      likesCount={comment.likesCount ?? 0}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -72,6 +106,7 @@ export default function CommentSection({ postId }) {
 
       <form onSubmit={handleSubmit} className="mt-3 flex gap-2">
         <input
+          ref={inputRef}
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}

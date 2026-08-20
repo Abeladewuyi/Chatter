@@ -16,10 +16,8 @@ import Messages from "./pages/Messages/Messages";
 
 function App() {
   return (
-    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
-      <ThemeToggle />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -42,6 +40,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/profile/:uid"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/create-post"
@@ -51,36 +57,18 @@ function App() {
               </ProtectedRoute>
             }
           />
-                  <Route
-  path="/explore"
-  element={
-    <ProtectedRoute>
-      <Explore />
-    </ProtectedRoute>
-  }
-/>
 
-<Route
-  path="/notifications"
-  element={
-    <ProtectedRoute>
-      <Notifications />
-    </ProtectedRoute>
-  }
-/>
-
-<Route
-  path="/messages"
-  element={
-    <ProtectedRoute>
-      <Messages />
-    </ProtectedRoute>
-  }
-/>
+          <Route
+            path="/explore"
+            element={
+              <ProtectedRoute>
+                <Explore />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-    </ThemeProvider>
   );
 }
 
