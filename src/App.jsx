@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ThemeToggle from "./components/ThemeToggle";
 
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
@@ -14,85 +16,88 @@ import Messages from "./pages/Messages/Messages";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <ThemeToggle />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile/:uid"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/:uid"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/create-post"
-            element={
-              <ProtectedRoute>
-                <CreatePost />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/create-post"
+              element={
+                <ProtectedRoute>
+                  <CreatePost />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/explore"
-            element={
-              <ProtectedRoute>
-                <Explore />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/explore"
+              element={
+                <ProtectedRoute>
+                  <Explore />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/notifications"
-            element={
-              <ProtectedRoute>
-                <Notifications />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <Notifications />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/messages"
-            element={
-              <ProtectedRoute>
-                <Messages />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/messages/:uid"
-            element={
-              <ProtectedRoute>
-                <Messages />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            <Route
+              path="/messages"
+              element={
+                <ProtectedRoute>
+                  <Messages />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages/:uid"
+              element={
+                <ProtectedRoute>
+                  <Messages />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

@@ -50,6 +50,27 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+li,
+a,
+button,
+input,
+textarea,
+select {
+  letter-spacing: 0.01em;
 }
 
 input::placeholder {
