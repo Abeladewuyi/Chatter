@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
+import { initializeFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 // These values come from your Firebase project settings (Project settings > General > Your apps).
@@ -22,5 +22,7 @@ const app = initializeApp(firebaseConfig);
 // We export these three instances once, then import them wherever we need
 // auth (login/signup), db (Firestore reads/writes), or storage (image uploads).
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true
+});
 export const storage = getStorage(app);

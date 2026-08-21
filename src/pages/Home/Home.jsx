@@ -25,7 +25,7 @@ export default function Home() {
   const { profile } = useUserProfile(uid);
   const { followingIds, loading: loadingFollowing } = useFollowingIds(uid);
   const authorIds = uid ? [...new Set([uid, ...followingIds])] : [];
-  const { posts, loading: loadingPosts, error } = usePosts(authorIds);
+const { posts, loading: loadingPosts } = usePosts(authorIds);
   const loading = loadingFollowing || loadingPosts;
   const { unreadCount } = useNotifications(uid);
 
@@ -177,13 +177,7 @@ export default function Home() {
 
           {loading && <p className="py-8 text-center text-sm text-text-secondary">Loading feed...</p>}
 
-{error && posts.length === 0 && (
-  <p className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-400">
-    Couldn't load posts. Please refresh.
-  </p>
-)}
-
-          {!loading && !error && posts.length === 0 && followingIds.length === 0 && (
+{!loading && posts.length === 0 && followingIds.length === 0 && (
             <div className="rounded-2xl border border-border bg-surface p-8 text-center">
               <h2 className="text-lg font-semibold text-text-primary">Your feed is empty</h2>
               <p className="mt-2 text-sm text-text-secondary">
@@ -200,8 +194,7 @@ export default function Home() {
               </div>
             </div>
           )}
-
-          {!loading && !error && posts.length === 0 && followingIds.length > 0 && (
+{!loading && posts.length === 0 && followingIds.length > 0 && (
             <div className="rounded-2xl border border-border bg-surface p-8 text-center">
               <p className="text-sm text-text-secondary">No posts yet from people you follow.</p>
             </div>

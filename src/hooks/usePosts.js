@@ -15,7 +15,10 @@ export function usePosts(authorIds) {
     }
 
     const cappedIds = authorIds.slice(0, 10);
-
+console.log("POST DEBUG:", {
+  authorIds,
+  cappedIds,
+});
     const postsQuery = query(
       collection(db, "posts"),
       where("authorId", "in", cappedIds),
