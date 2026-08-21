@@ -22,7 +22,7 @@ function formatTimestamp(timestamp) {
 
 export default function PostCard({ post }) {
   const { user } = useAuth();
-  const { isLiked, toggleLike } = useLike(post.id, user.uid);
+  const { isLiked, toggleLike } = useLike(post.id, user.uid, post.authorId);
   const [showComments, setShowComments] = useState(false);
 
   const isOwnPost = post.authorId === user.uid;
@@ -84,7 +84,7 @@ export default function PostCard({ post }) {
         </button>
       </div>
 
-{showComments && <CommentSection postId={post.id} autoFocus />}
+      {showComments && <CommentSection postId={post.id} postAuthorId={post.authorId} autoFocus />}
     </div>
   );
 }

@@ -1,10 +1,6 @@
-import { doc, writeBatch, serverTimestamp, increment } from "firebase/firestore";
+import { doc, writeBatch, serverTimestamp, increment, collection } from "firebase/firestore";
 import { db } from "./config";
 
-/**
- * Following someone touches FOUR documents at once. We use a writeBatch so
- * all four either succeed together or fail together.
- */
 export async function followUser(currentUid, targetUid) {
   const batch = writeBatch(db);
 
@@ -16,6 +12,18 @@ export async function followUser(currentUid, targetUid) {
   });
   batch.update(doc(db, "users", currentUid), { followingCount: increment(1) });
   batch.update(doc(db, "users", targetUid), { followersCount: increment(1) });
+
+  if (targetUid !== currentUid) {
+    const notifRef = doc(collection(db, "notifications", targetUid, "items"));
+    batch.set(notifRef, {
+      type: "follow",
+      fromUserId: currentUid,
+      postId: null,
+      commentId: null,
+      read: false,
+      createdAt: serverTimestamp(),
+    });
+  }
 
   await batch.commit();
 }

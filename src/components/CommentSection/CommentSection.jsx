@@ -5,8 +5,8 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import { useComments } from "../../hooks/useComments";
 import { useCommentLike } from "../../hooks/useCommentLike";
 
-function CommentLikeButton({ postId, commentId, uid, likesCount }) {
-  const { isLiked, toggleLike } = useCommentLike(postId, commentId, uid);
+function CommentLikeButton({ postId, commentId, uid, commentAuthorId, likesCount }) {
+  const { isLiked, toggleLike } = useCommentLike(postId, commentId, uid, commentAuthorId);
 
   return (
     <button
@@ -21,10 +21,10 @@ function CommentLikeButton({ postId, commentId, uid, likesCount }) {
   );
 }
 
-export default function CommentSection({ postId, autoFocus = false }) {
+export default function CommentSection({ postId, postAuthorId, autoFocus = false }) {
   const { user } = useAuth();
   const { profile } = useUserProfile(user.uid);
-  const { comments, loading, addComment, deleteComment } = useComments(postId);
+  const { comments, loading, addComment, deleteComment } = useComments(postId, postAuthorId);
   const [text, setText] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const inputRef = useRef(null);
@@ -85,6 +85,7 @@ export default function CommentSection({ postId, autoFocus = false }) {
                       postId={postId}
                       commentId={comment.id}
                       uid={user.uid}
+                      commentAuthorId={comment.authorId}
                       likesCount={comment.likesCount ?? 0}
                     />
                   </div>

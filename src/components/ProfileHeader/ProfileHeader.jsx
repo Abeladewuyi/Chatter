@@ -1,4 +1,10 @@
-export default function ProfileHeader({ profile, isOwnProfile, onEditClick }) {
+import { Link } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
+import { useFollow } from "../../hooks/useFollow";
+
+export default function ProfileHeader({ profile, isOwnProfile, currentUid, onEditClick }) {
+  const { isFollowing, toggleFollow } = useFollow(currentUid, profile.id);
+
   return (
     <div className="border-b border-border pb-6">
       <div className="flex items-center gap-4">
@@ -19,13 +25,34 @@ export default function ProfileHeader({ profile, isOwnProfile, onEditClick }) {
           <p className="text-sm text-text-secondary">@{profile.username}</p>
         </div>
 
-        {isOwnProfile && (
+        {isOwnProfile ? (
           <button
             onClick={onEditClick}
             className="rounded-lg border border-border bg-surface-2 px-4 py-2 text-sm text-text-primary hover:border-accent"
           >
             Edit Profile
           </button>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={toggleFollow}
+              className={
+                isFollowing
+                  ? "rounded-lg border border-border px-4 py-2 text-sm text-text-secondary hover:border-red-400 hover:text-red-400"
+                  : "rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
+              }
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </button>
+
+            <Link
+              to={`/messages/${profile.id}`}
+              className="flex items-center gap-1.5 rounded-lg border border-border px-4 py-2 text-sm text-text-primary hover:border-accent"
+            >
+              <MessageCircle size={16} />
+              Message
+            </Link>
+          </div>
         )}
       </div>
 

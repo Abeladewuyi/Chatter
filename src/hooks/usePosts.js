@@ -2,11 +2,6 @@ import { useEffect, useState } from "react";
 import { collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-/**
- * Firestore's `in` operator only accepts up to 10 values. Fine for a
- * practice app; a real app with large follow lists needs a different
- * approach (e.g. a fan-out feed collection via Cloud Functions).
- */
 export function usePosts(authorIds) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +27,7 @@ export function usePosts(authorIds) {
       postsQuery,
       (snapshot) => {
         setPosts(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        setError(null);
         setLoading(false);
       },
       (err) => {

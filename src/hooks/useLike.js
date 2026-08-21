@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { doc, onSnapshot, setDoc, deleteDoc, updateDoc, increment, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { createNotification } from "../firebase/notifications";
 
-/**
- * The like doc's ID IS the current user's uid — so "does this doc exist"
- * directly answers "have I liked this post."
- */
-export function useLike(postId, uid) {
+export function useLike(postId, uid, postAuthorId) {
   const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
@@ -30,6 +27,15 @@ export function useLike(postId, uid) {
     } else {
       await setDoc(likeRef, { createdAt: serverTimestamp() });
       await updateDoc(postRef, { likesCount: increment(1) });
+
+      if (postAuthorId) {
+        await createNotification({
+          toUserId: postAuthorId,
+          fromUserId: uid,
+          type: "like_post",
+          postId,
+        });
+      }
     }
   }
 
