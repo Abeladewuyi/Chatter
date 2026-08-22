@@ -1,22 +1,49 @@
 import { useEffect, useState } from "react";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { Link, useParams } from "react-router-dom";
 import { Send, ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { db } from "../../firebase/config";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useConversations } from "../../hooks/useConversations";
 import { useMessages } from "../../hooks/useMessages";
 import { ensureConversation, sendMessage } from "../../firebase/messages";
 
+async function markConversationAsRead(conversationId, myUid) {
+  if (!conversationId) return;
+
+  const messagesSnap = await getDocs(collection(db, "conversations", conversationId, "messages"));
+  const unreadIncomingMessages = messagesSnap.docs.filter((messageDoc) => {
+    const message = messageDoc.data();
+    return message.senderId !== myUid && message.read !== true;
+  });
+
+  if (unreadIncomingMessages.length === 0) return;
+
+  await Promise.all(
+    unreadIncomingMessages.map((messageDoc) =>
+      updateDoc(doc(db, "conversations", conversationId, "messages", messageDoc.id), { read: true })
+    )
+  );
+}
+
 function ConversationRow({ conversation, myUid }) {
   const otherUid = conversation.participants.find((id) => id !== myUid);
   const { profile } = useUserProfile(otherUid);
+  const { messages } = useMessages(conversation.id);
+  const hasUnreadMessages = messages.some(
+    (message) => message.senderId !== myUid && message.read !== true
+  );
 
   if (!profile) return null;
 
   return (
     <Link
       to={`/messages/${otherUid}`}
-      className="flex items-center gap-3 rounded-xl border border-border bg-surface p-3 hover:border-accent"
+      onClick={() => markConversationAsRead(conversation.id, myUid)}
+      className={`flex items-center gap-3 rounded-xl border p-3 transition-colors hover:border-accent ${
+        hasUnreadMessages ? "border-accent/30 bg-accent/5" : "border-border bg-surface"
+      }`}
     >
       <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
         {profile.photoURL ? (
@@ -27,7 +54,7 @@ function ConversationRow({ conversation, myUid }) {
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium text-text-primary">{profile.displayName}</p>
-        <p className="truncate text-xs text-text-muted">
+        <p className={`truncate text-xs ${hasUnreadMessages ? "font-medium text-text-primary" : "text-text-muted"}`}>
           {conversation.lastMessage || "Say hello!"}
         </p>
       </div>
@@ -80,6 +107,22 @@ function ChatWindow({ myUid, otherUid }) {
 
   const { messages, loading } = useMessages(conversationId);
 
+  useEffect(() => {
+    if (!conversationId || !messages.length) return;
+
+    const unreadIncomingMessages = messages.filter(
+      (message) => message.senderId !== myUid && message.read !== true
+    );
+
+    if (unreadIncomingMessages.length === 0) return;
+
+    Promise.all(
+      unreadIncomingMessages.map((message) =>
+        updateDoc(doc(db, "conversations", conversationId, "messages", message.id), { read: true })
+      )
+    ).catch((err) => console.error("Failed to mark messages as read:", err));
+  }, [conversationId, messages, myUid]);
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (!text.trim() || !conversationId) return;
@@ -96,9 +139,9 @@ function ChatWindow({ myUid, otherUid }) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-3rem)] flex-col">
-      <div className="mb-4 flex items-center gap-3 border-b border-border pb-4">
-        <Link to="/messages" className="text-text-secondary hover:text-accent">
+    <div className="relative flex h-[calc(100vh-3rem)] flex-col pt-10">
+      <div className="absolute left-0 top-0 z-10 flex w-full items-center gap-3 border-b border-border bg-bg pb-3 pt-2">
+        <Link to="/messages" className="ml-1 text-text-secondary hover:text-accent">
           <ArrowLeft size={20} />
         </Link>
         <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
