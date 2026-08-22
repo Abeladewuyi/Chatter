@@ -1,5 +1,5 @@
 import { Bell, House, MessageCircle, Search } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 const navItems = [
   { to: "/", label: "Home", icon: House },
@@ -9,6 +9,13 @@ const navItems = [
 ];
 
 export default function MobileNav() {
+  const location = useLocation();
+  const isChatView = location.pathname.startsWith("/messages/") && location.pathname !== "/messages";
+
+  if (isChatView) {
+    return null;
+  }
+
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
       <div className="mx-auto grid h-16 max-w-lg grid-cols-4">
