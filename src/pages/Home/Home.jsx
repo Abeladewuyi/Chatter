@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LogOut, Plus, Bell, Mail } from "lucide-react";
+import { LogOut, Plus, Bell, Mail, Compass, Home as HomeIcon, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { logOut } from "../../firebase/auth";
 import { useFollowingIds } from "../../hooks/useFollowingIds";
@@ -25,7 +25,7 @@ export default function Home() {
   const { profile } = useUserProfile(uid);
   const { followingIds, loading: loadingFollowing } = useFollowingIds(uid);
   const authorIds = uid ? [...new Set([uid, ...followingIds])] : [];
-const { posts, loading: loadingPosts } = usePosts(authorIds);
+ const { posts, loading: loadingPosts, error } = usePosts(authorIds);
   const loading = loadingFollowing || loadingPosts;
   const { unreadCount } = useNotifications(uid);
 
@@ -37,7 +37,7 @@ const { posts, loading: loadingPosts } = usePosts(authorIds);
   return (
     <div className="min-h-screen bg-bg">
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-5 sm:px-6 lg:px-8">
-        {/* Desktop sidebar */}
+        {/* Desktop sidebar — only visible at lg breakpoint and up */}
         <aside className="sticky top-5 hidden h-[calc(100vh-2.5rem)] w-56 shrink-0 flex-col lg:flex">
           <img src={chatterLogo} alt="Chatter" className="h-8 w-auto" />
 
@@ -118,33 +118,18 @@ const { posts, loading: loadingPosts } = usePosts(authorIds);
         </aside>
 
         {/* Main feed */}
-        <main className="min-w-0 w-full max-w-2xl">
+        <main className="min-w-0 w-full max-w-2xl pb-24 lg:pb-0">
           {/* Mobile header */}
           <header className="mb-8 flex items-center justify-between pr-14 lg:hidden">
             <img src={chatterLogo} alt="Chatter" className="h-8 w-auto" />
 
-            <div className="flex items-center gap-4">
-              <Link to="/explore" className="text-sm text-text-secondary hover:text-accent">
-                Explore
-              </Link>
-
-              <Link to="/notifications" className="relative text-text-secondary hover:text-accent">
-                <Bell size={18} />
-                <NotificationBadge count={unreadCount} />
-              </Link>
-
-              <Link to="/messages" className="text-text-secondary hover:text-accent">
-                <Mail size={18} />
-              </Link>
-
-              <Link to="/profile">
-                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
-                  {photoURL ? (
-                    <img src={photoURL} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    initial
-                  )}
-                </div>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/explore"
+                className="flex h-10 w-10 items-center justify-center rounded-full text-text-secondary transition hover:bg-surface hover:text-accent"
+                aria-label="Explore"
+              >
+                <Compass size={20} />
               </Link>
             </div>
           </header>
@@ -175,7 +160,13 @@ const { posts, loading: loadingPosts } = usePosts(authorIds);
             </div>
           </Link>
 
-          {loading && <p className="py-8 text-center text-sm text-text-secondary">Loading feed...</p>}
+{loading && <p className="py-8 text-center text-sm text-text-secondary">Loading feed...</p>}
+
+{error && posts.length === 0 && (
+  <p className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-400">
+    Couldn't load posts. Please refresh.
+  </p>
+)}
 
 {!loading && posts.length === 0 && followingIds.length === 0 && (
             <div className="rounded-2xl border border-border bg-surface p-8 text-center">
@@ -194,7 +185,8 @@ const { posts, loading: loadingPosts } = usePosts(authorIds);
               </div>
             </div>
           )}
-{!loading && posts.length === 0 && followingIds.length > 0 && (
+
+          {!loading && posts.length === 0 && followingIds.length > 0 && (
             <div className="rounded-2xl border border-border bg-surface p-8 text-center">
               <p className="text-sm text-text-secondary">No posts yet from people you follow.</p>
             </div>
@@ -207,6 +199,48 @@ const { posts, loading: loadingPosts } = usePosts(authorIds);
           </div>
         </main>
       </div>
+
+      {/* Mobile bottom navigation — sits OUTSIDE the desktop sidebar so it
+          actually gets to render on small screens. lg:hidden hides it once
+          the desktop sidebar takes over. */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-bg/95 backdrop-blur-lg lg:hidden">
+        <div className="grid h-16 grid-cols-4">
+          <Link
+            to="/"
+            className="flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
+          >
+            <HomeIcon size={20} />
+            <span className="text-[10px] font-medium">Home</span>
+          </Link>
+
+          <Link
+            to="/messages"
+            className="flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
+          >
+            <Mail size={20} />
+            <span className="text-[10px] font-medium">Messages</span>
+          </Link>
+
+          <Link
+            to="/notifications"
+            className="relative flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
+          >
+            <span className="relative">
+              <Bell size={20} />
+              <NotificationBadge count={unreadCount} />
+            </span>
+            <span className="text-[10px] font-medium">Alerts</span>
+          </Link>
+
+          <Link
+            to="/profile"
+            className="flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
+          >
+            <User size={20} />
+            <span className="text-[10px] font-medium">Profile</span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 }

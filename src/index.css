@@ -56,21 +56,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-li,
-a,
-button,
-input,
-textarea,
-select {
+:where(h1, h2, h3, h4, h5, h6, p, span, li, a, button, input, textarea, select, label, small, div, strong, em, time, code, pre, figcaption) {
   letter-spacing: 0.01em;
+  font-family: var(--font-sans);
 }
 
 input::placeholder {

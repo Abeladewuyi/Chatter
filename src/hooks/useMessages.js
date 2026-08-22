@@ -5,6 +5,7 @@ import { db } from "../firebase/config";
 export function useMessages(conversationId) {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!conversationId) return;
@@ -14,13 +15,22 @@ export function useMessages(conversationId) {
       orderBy("createdAt", "asc")
     );
 
-    const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-      setMessages(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
-      setLoading(false);
-    });
+    const unsubscribe = onSnapshot(
+      messagesQuery,
+      (snapshot) => {
+        setMessages(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
+        setError(null);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("useMessages error:", err);
+        setError(err);
+        setLoading(false);
+      }
+    );
 
     return unsubscribe;
   }, [conversationId]);
 
-  return { messages, loading };
+  return { messages, loading, error };
 }
