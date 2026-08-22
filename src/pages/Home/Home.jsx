@@ -6,13 +6,16 @@ import { useFollowingIds } from "../../hooks/useFollowingIds";
 import { usePosts } from "../../hooks/usePosts";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useNotifications } from "../../hooks/useNotifications";
+import { useUnreadMessageCount } from "../../hooks/useUnreadMessageCount";
 import PostCard from "../../components/PostCard/PostCard";
 import chatterLogo from "../../assets/chatter-logo.png";
 
-function NotificationBadge({ count }) {
+function NotificationBadge({ count, color = "bg-accent" }) {
   if (count === 0) return null;
   return (
-    <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-white">
+    <span
+      className={`absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full ${color} px-1 text-[10px] font-semibold text-white`}
+    >
       {count > 9 ? "9+" : count}
     </span>
   );
@@ -28,6 +31,7 @@ export default function Home() {
  const { posts, loading: loadingPosts, error } = usePosts(authorIds);
   const loading = loadingFollowing || loadingPosts;
   const { unreadCount } = useNotifications(uid);
+  const { unreadMessageCount } = useUnreadMessageCount(uid);
 
   const displayName = profile?.displayName || "You";
   const username = profile?.username || "";
@@ -69,9 +73,12 @@ export default function Home() {
 
             <Link
               to="/messages"
-              className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface hover:text-text-primary"
+              className="relative flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface hover:text-text-primary"
             >
-              <Mail size={16} />
+              <span className="relative">
+                <Mail size={16} />
+                <NotificationBadge count={unreadMessageCount} color="bg-red-500" />
+              </span>
               Messages
             </Link>
 
@@ -215,9 +222,12 @@ export default function Home() {
 
           <Link
             to="/messages"
-            className="flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
+            className="relative flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
           >
-            <Mail size={20} />
+            <span className="relative">
+              <Mail size={20} />
+              <NotificationBadge count={unreadMessageCount} color="bg-red-500" />
+            </span>
             <span className="text-[10px] font-medium">Messages</span>
           </Link>
 
