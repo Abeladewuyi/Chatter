@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LogOut, Plus, Bell, Mail, Compass, Home as HomeIcon, User } from "lucide-react";
+import { LogOut, Plus, Bell, Mail, Search, Home as HomeIcon, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { logOut } from "../../firebase/auth";
 import { useFollowingIds } from "../../hooks/useFollowingIds";
@@ -129,7 +129,7 @@ export default function Home() {
                 className="flex h-10 w-10 items-center justify-center rounded-full text-text-secondary transition hover:bg-surface hover:text-accent"
                 aria-label="Explore"
               >
-                <Compass size={20} />
+                <Search size={20} />
               </Link>
             </div>
           </header>
@@ -229,7 +229,7 @@ export default function Home() {
               <Bell size={20} />
               <NotificationBadge count={unreadCount} />
             </span>
-            <span className="text-[10px] font-medium">Alerts</span>
+            <span className="text-[10px] font-medium">Notifications</span>
           </Link>
 
           <Link
