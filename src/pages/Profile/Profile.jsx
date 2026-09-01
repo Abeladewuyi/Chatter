@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import ProfileHeader from "../../components/ProfileHeader/ProfileHeader";
 import EditProfileForm from "../../components/ProfileHeader/EditProfileForm";
+import { logOut } from "../../firebase/auth";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -42,6 +43,18 @@ export default function Profile() {
       <div className="mt-6 text-sm text-text-muted">
         Posts will show up here starting in a later update.
       </div>
+
+      {/* Mobile-only bottom logout button */}
+      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-bg/95 px-4 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden">
+        <div className="mx-auto max-w-2xl py-3">
+          <button
+            onClick={logOut}
+            className="flex w-full items-center justify-center rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white hover:bg-red-600"
+          >
+            Log out
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
