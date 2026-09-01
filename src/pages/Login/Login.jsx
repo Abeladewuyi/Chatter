@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { logIn, getAuthErrorMessage } from "../../firebase/auth";
-import chatterLogo from "../../assets/chatter-logo.png";
+import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await logIn({ email, password });
-      navigate("/"); // AuthContext will pick up the new user automatically
+      navigate("/");
     } catch (err) {
       setError(getAuthErrorMessage(err));
     } finally {
@@ -31,28 +31,13 @@ export default function Login() {
   }
 
   return (
-<div className="min-h-screen bg-surface px-6 py-8 sm:flex sm:items-center sm:justify-center sm:bg-bg sm:px-4">
-  <div className="w-full max-w-sm sm:rounded-2xl sm:border sm:border-border sm:bg-surface sm:p-8">
-
-  <img
-  src={chatterLogo}
-  alt="Chatter"
-  className="h-8 w-auto"
-/>
-
-
-
-<div className="mt-16 sm:mt-0">
-  <h1 className="mb-1 text-2xl font-semibold text-text-primary">
-    Welcome back
-  </h1>
-
-  <p className="mb-6 text-sm text-text-secondary">
-    Log in to continue to Chatter.
-  </p>
-
-  {/* Keep the form and the links here */}
-</div>
+    <div className="flex min-h-screen items-center justify-center bg-bg px-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <img src={gridspaceLogo} alt="Gridspace" className="mb-4 h-12 w-12" />
+          <h1 className="text-2xl font-semibold text-text-primary">Gridspace</h1>
+          <p className="mt-1 text-sm text-text-secondary">Connect. Share. Grow.</p>
+        </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
@@ -88,18 +73,18 @@ export default function Login() {
           <button
             type="submit"
             disabled={submitting}
-            className="mt-2 rounded-lg bg-accent px-4 py-2 font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+            className="mt-2 rounded-lg bg-accent px-4 py-2.5 font-medium text-on-accent transition-colors hover:bg-accent-hover disabled:opacity-60"
           >
-            {submitting ? "Logging in..." : "Log in"}
+            {submitting ? "Logging in..." : "Log In"}
           </button>
         </form>
 
-        <div className="mt-4 flex justify-between text-sm">
-          <Link to="/forgot-password" className="text-text-secondary hover:text-accent">
+        <div className="mt-5 flex justify-between text-sm">
+          <Link to="/forgot-password" className="text-text-secondary hover:text-text-primary">
             Forgot password?
           </Link>
-          <Link to="/signup" className="text-accent hover:text-accent-hover">
-            Create account
+          <Link to="/signup" className="text-text-primary hover:text-text-secondary">
+            Sign up
           </Link>
         </div>
       </div>

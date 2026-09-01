@@ -8,7 +8,7 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useUnreadMessageCount } from "../../hooks/useUnreadMessageCount";
 import PostCard from "../../components/PostCard/PostCard";
-import chatterLogo from "../../assets/chatter-logo.png";
+import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 
 function NotificationBadge({ count, color = "bg-accent" }) {
   if (count === 0) return null;
@@ -43,7 +43,7 @@ export default function Home() {
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-5 sm:px-6 lg:px-8">
         {/* Desktop sidebar — only visible at lg breakpoint and up */}
         <aside className="sticky top-5 hidden h-[calc(100vh-2.5rem)] w-56 shrink-0 flex-col lg:flex">
-          <img src={chatterLogo} alt="Chatter" className="h-8 w-auto" />
+          <img src={gridspaceLogo} alt="Gridspace" className="h-8 w-auto" />
 
           <nav className="mt-10 flex flex-col gap-2">
             <Link
@@ -128,7 +128,7 @@ export default function Home() {
         <main className="min-w-0 w-full max-w-2xl pb-24 lg:pb-0">
           {/* Mobile header */}
           <header className="mb-8 flex items-center justify-between pr-14 lg:hidden">
-            <img src={chatterLogo} alt="Chatter" className="h-8 w-auto" />
+            <img src={gridspaceLogo} alt="Gridspace" className="h-8 w-auto" />
 
             <div className="flex items-center gap-3">
               <Link

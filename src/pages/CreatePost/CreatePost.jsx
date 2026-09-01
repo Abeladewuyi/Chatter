@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { createPost } from "../../firebase/posts";
-import chatterLogo from "../../assets/chatter-logo.png";
+import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -57,8 +57,8 @@ export default function CreatePost() {
       <div className="mx-auto w-full max-w-2xl px-4 py-5 sm:px-6">
         <header className="mb-8 flex items-center justify-between pr-14">
           <img
-            src={chatterLogo}
-            alt="Chatter"
+            src={gridspaceLogo}
+            alt="Gridspace"
             className="h-8 w-auto"
           />
 

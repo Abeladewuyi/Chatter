@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
 
       manifest: {
-        name: 'Chatter',
-        short_name: 'Chatter',
+        name: 'Gridspace',
+        short_name: 'Gridspace',
         description: 'A modern social media app',
         start_url: '/',
         scope: '/',
@@ -23,19 +23,19 @@ export default defineConfig({
 
         icons: [
           {
-            src: '/icons/chatter-icon-192.png',
+            src: '/icons/gridspace-icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/chatter-icon-512.png',
+            src: '/icons/gridspace-icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/chatter-icon-512-maskable.png',
+            src: '/icons/gridspace-icon-512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
