@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import ProfileHeader from "../../components/ProfileHeader/ProfileHeader";
 import EditProfileForm from "../../components/ProfileHeader/EditProfileForm";
+import { ArrowLeft, Settings } from "lucide-react";
 import { logOut } from "../../firebase/auth";
 
 export default function Profile() {
@@ -29,6 +30,23 @@ export default function Profile() {
 
   return (
     <div className="mx-auto max-w-2xl p-6">
+      <header className="relative mb-4 h-12">
+        <div className="absolute inset-y-0 left-0 flex items-center">
+          <Link to="/" aria-label="Back" className="p-2 text-text-secondary hover:text-text-primary">
+            <ArrowLeft size={22} />
+          </Link>
+        </div>
+
+        <h2 className="absolute inset-x-0 top-0 text-center text-lg font-semibold text-text-primary">
+          Profile
+        </h2>
+
+        <div className="absolute inset-y-0 right-0 flex items-center">
+          <Link to="/settings" aria-label="Settings" className="p-2 text-text-secondary hover:text-text-primary">
+            <Settings size={22} />
+          </Link>
+        </div>
+      </header>
       {isEditing ? (
         <EditProfileForm uid={user.uid} profile={profile} onDone={() => setIsEditing(false)} />
       ) : (

@@ -64,6 +64,145 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+/* Shiny animated overlay used on auth pages while retaining the base black background */
+.bg-shiny {
+  background-color: var(--color-bg);
+  position: relative;
+}
+
+.bg-shiny::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(124,58,237,0.07), rgba(99,102,241,0.05) 25%, rgba(99,102,241,0.03) 50%, rgba(59,130,246,0.04) 75%, rgba(124,58,237,0.07));
+  background-size: 200% 200%;
+  animation: gradientShift 12s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0.12;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Subtle moving sheen overlay */
+.shiny-sheen::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -30%;
+  width: 160%;
+  height: 220%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+  transform: rotate(-15deg);
+  animation: sheenMove 6s linear infinite;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+@keyframes sheenMove {
+  0% { transform: translateX(-20%) rotate(-15deg); }
+  100% { transform: translateX(20%) rotate(-15deg); }
+}
+
+/* Signup completion overlay */
+.signup-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 60;
+}
+
+.signup-overlay .panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.progress-ring {
+  width: 120px;
+  height: 120px;
+  display: inline-block;
+}
+
+.progress-ring circle {
+  fill: transparent;
+  stroke: rgba(255,255,255,0.12);
+  stroke-width: 8;
+}
+
+.progress-ring .progress {
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-width: 8;
+  stroke-dasharray: 282.6; /* approx circumference for r=45 */
+  stroke-dashoffset: 282.6;
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 80ms linear;
+}
+
+@keyframes drawRing {
+  to { stroke-dashoffset: 0; }
+}
+
+.signup-overlay .check {
+  color: #fff;
+  font-weight: 600;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.signup-overlay.done .check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.signup-overlay .message {
+  color: var(--color-text-primary);
+  font-size: 16px;
+}
+
+.progress-ring text {
+  fill: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* falling check animation and layout */
+.check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+}
+
+.check .icon {
+  opacity: 0;
+  transform: translateY(-18px) scale(0.95);
+  transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 240ms ease;
+}
+
+.signup-overlay.done .check .icon {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.signup-overlay .message {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--color-text-primary);
+  font-size: 16px;
+}
+
 :where(h1, h2, h3, h4, h5, h6, p, span, li, a, button, input, textarea, select, label, small, div, strong, em, time, code, pre, figcaption) {
   letter-spacing: 0.01em;
   font-family: var(--font-sans);

@@ -31,7 +31,7 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg px-4">
+    <div className="flex min-h-screen items-center justify-center bg-shiny shiny-sheen relative px-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center text-center">
           <img src={gridspaceLogo} alt="Gridspace" className="mb-4 h-12 w-12" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { signUp, getAuthErrorMessage } from "../../firebase/auth";
@@ -44,6 +44,9 @@ export default function Signup() {
   const [form, setForm] = useState({ displayName: "", username: "", email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayDone, setOverlayDone] = useState(false);
+  const [progressPct, setProgressPct] = useState(0);
 
   const step = STEPS[stepIndex];
   const isLastStep = stepIndex === STEPS.length - 1;
@@ -71,10 +74,13 @@ export default function Signup() {
     setSubmitting(true);
     try {
       await signUp(form);
-      navigate("/");
+      // show completion overlay, then navigate after animation
+      setShowOverlay(true);
+      setSubmitting(false);
+      // navigate once animation and check visible
+      setTimeout(() => navigate("/"), 2200);
     } catch (err) {
       setError(getAuthErrorMessage(err));
-    } finally {
       setSubmitting(false);
     }
   }
@@ -88,21 +94,51 @@ export default function Signup() {
     }
   }
 
+  useEffect(() => {
+    if (!showOverlay) return;
+    setProgressPct(0);
+    let rafId;
+    const duration = 1400;
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const pct = Math.floor(t * 100);
+      setProgressPct(pct);
+      if (t < 1) rafId = requestAnimationFrame(tick);
+      else {
+        setProgressPct(100);
+        setOverlayDone(true);
+      }
+    };
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [showOverlay]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg px-4">
+    <div className="flex min-h-screen items-start justify-center bg-shiny shiny-sheen relative px-4 pt-24">
       <div className="w-full max-w-sm">
-<button
-  onClick={handleBack}
-  className="mb-10 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-text-primary hover:text-text-primary active:bg-surface-2"
->
-  <ArrowLeft size={14} />
-  Back
-</button>
+        <button
+          onClick={handleBack}
+          aria-label="Go back"
+          className="fixed top-6 left-4 z-50 inline-flex items-center justify-center rounded-lg bg-white/60 text-text-primary shadow-sm border border-border border-opacity-30 px-3 py-2 transition-transform hover:-translate-y-0.5 active:translate-y-0.5"
+        >
+          <svg
+            width="28"
+            height="20"
+            viewBox="0 0 28 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path d="M18.5 2.5L8 10L18.5 17.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+            <rect x="19.5" y="9" width="6" height="2" rx="1" fill="currentColor" />
+          </svg>
+        </button>
 
-        <div className="mb-8 flex flex-col items-center text-center">
-          <img src={gridspaceLogo} alt="Gridspace" className="mb-4 h-10 w-10" />
+        <div className="mt-0 mb-4 flex flex-col items-center text-center">
+          <img src={gridspaceLogo} alt="Gridspace" className="mb-2 h-10 w-10" />
 
-          <div className="mb-6 flex gap-1.5">
+          <div className="mb-4 flex gap-1.5">
             {STEPS.map((_, i) => (
               <span
                 key={i}
@@ -113,7 +149,7 @@ export default function Signup() {
             ))}
           </div>
 
-          <h1 className="text-2xl font-semibold text-text-primary">{step.label}</h1>
+          <h1 className="text-3xl font-semibold text-text-primary">{step.label}</h1>
         </div>
 
         <form onSubmit={handleNext} className="flex flex-col gap-4">
@@ -137,16 +173,56 @@ export default function Signup() {
           </button>
         </form>
 
-<p className="mt-10 text-center text-sm text-text-secondary">
-  Already have an account?{" "}
-  <Link
-    to="/login"
-    className="font-medium text-text-primary underline-offset-4 transition-opacity hover:underline active:opacity-60"
-  >
-    Log in
-  </Link>
-</p>
+        <p className="mt-10 text-center text-sm text-text-secondary hidden lg:block">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-medium text-text-primary underline-offset-4 transition-opacity hover:underline active:opacity-60"
+          >
+            Log in
+          </Link>
+        </p>
+
+        {/* Mobile fixed bottom login prompt */}
+        <div className="fixed inset-x-0 bottom-6 z-40 flex justify-center px-4 lg:hidden">
+          <p className="rounded-lg bg-bg/80 px-4 py-2 text-center text-sm text-text-secondary backdrop-blur">
+            Already have an account?{" "}
+            <Link to="/login" className="font-medium text-text-primary underline-offset-4">
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
+
+      {showOverlay && (
+        <div className={`signup-overlay ${overlayDone ? "done" : ""}`}>
+          <div className="panel">
+            <svg className="progress-ring" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="45" />
+              <circle
+                className="progress"
+                cx="50"
+                cy="50"
+                r="45"
+                style={{ strokeDashoffset: 282.6 * (1 - progressPct / 100) }}
+              />
+              <text x="50" y="56" textAnchor="middle">{progressPct}%</text>
+            </svg>
+
+            <div className="check">
+              <div className="icon" aria-hidden>
+                {overlayDone && (
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 6L9 17l-5-5" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </div>
+            </div>
+
+            <div className="message">{overlayDone ? "Completed" : "Creating account..."}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
