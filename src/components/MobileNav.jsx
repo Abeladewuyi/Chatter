@@ -1,14 +1,14 @@
-import { Bell, House, MessageCircle, Search } from "lucide-react";
+import { Bell, House, Search, Plus, User } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../hooks/useNotifications";
-import { useUnreadMessageCount } from "../hooks/useUnreadMessageCount";
 
 const navItems = [
   { to: "/", label: "Home", icon: House },
-  { to: "/explore", label: "Explore", icon: Search },
+  { to: "/explore", label: "Search", icon: Search },
+  { to: "/create-post", label: "New", icon: Plus },
   { to: "/notifications", label: "Notifications", icon: Bell },
-  { to: "/messages", label: "Messages", icon: MessageCircle },
+  { to: "/profile", label: "Profile", icon: User },
 ];
 
 function Badge({ count, color = "bg-accent" }) {
@@ -27,7 +27,6 @@ export default function MobileNav() {
   const location = useLocation();
   const { user } = useAuth();
   const { unreadCount } = useNotifications(user?.uid);
-  const { unreadMessageCount } = useUnreadMessageCount(user?.uid);
   const isChatView = location.pathname.startsWith("/messages/") && location.pathname !== "/messages";
 
   if (isChatView) {
@@ -35,12 +34,11 @@ export default function MobileNav() {
   }
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-2 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-      <div className="mx-auto grid h-16 max-w-lg grid-cols-4">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-surface/95 px-0 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <div className="mx-auto grid h-18 w-full max-w-full grid-cols-5">
         {navItems.map(({ to, label, icon: Icon }) => {
-          const badgeCount =
-            to === "/messages" ? unreadMessageCount : to === "/notifications" ? unreadCount : 0;
-          const badgeColor = to === "/messages" ? "bg-red-500" : "bg-accent";
+          const badgeCount = to === "/notifications" ? unreadCount : 0;
+          const badgeColor = "bg-accent";
 
           return (
             <NavLink
@@ -48,18 +46,16 @@ export default function MobileNav() {
               to={to}
               end={to === "/"}
               className={({ isActive }) =>
-                `relative flex flex-col items-center justify-center gap-1 text-xs transition-colors ${
-                  isActive
-                    ? "text-accent"
-                    : "text-text-muted hover:text-text-primary"
+                `relative flex w-full flex-col items-center justify-center gap-0 transition-colors ${
+                  isActive ? "text-accent" : "text-text-muted hover:text-text-primary"
                 }`
               }
             >
-              <span className="relative">
-                <Icon size={21} />
+              <span className="relative flex items-center justify-center">
+                <Icon size={26} strokeWidth={2} />
                 <Badge count={badgeCount} color={badgeColor} />
               </span>
-              <span>{label}</span>
+              <span className="text-[11px] font-semibold mt-1">{label}</span>
             </NavLink>
           );
         })}

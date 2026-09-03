@@ -6,7 +6,7 @@
   Defining them in @theme means we can use classes like `bg-surface` or `text-accent`
   anywhere in the app, instead of repeating raw hex codes everywhere.
 */
-@theme {
+:root {
   --color-bg: #000000;
   --color-surface: #0d0d0d;
   --color-surface-2: #1a1a1a;

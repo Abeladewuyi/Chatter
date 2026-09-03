@@ -6,6 +6,8 @@ import ProfileHeader from "../../components/ProfileHeader/ProfileHeader";
 import EditProfileForm from "../../components/ProfileHeader/EditProfileForm";
 import { ArrowLeft, Settings } from "lucide-react";
 import { logOut } from "../../firebase/auth";
+import { usePosts } from "../../hooks/usePosts";
+import PostCard from "../../components/PostCard/PostCard";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -15,6 +17,9 @@ export default function Profile() {
 
   const { profile, loading, error } = useUserProfile(targetUid);
   const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState("posts");
+
+  const { posts, loading: loadingPosts } = usePosts([profile?.id].filter(Boolean));
 
   if (loading) {
     return <div className="p-6 text-text-secondary">Loading profile...</div>;
@@ -58,21 +63,67 @@ export default function Profile() {
         />
       )}
 
-      <div className="mt-6 text-sm text-text-muted">
-        Posts will show up here starting in a later update.
+      {/* Tabs: Posts / Reposts / Saved */}
+      <div className="mt-6">
+        <div className="overflow-x-auto">
+          <div role="tablist" className="flex w-full items-center whitespace-nowrap px-0">
+            <button
+              role="tab"
+              aria-selected={activeTab === "posts"}
+              onClick={() => setActiveTab("posts")}
+              className={`flex-1 text-left px-4 py-3 text-lg font-semibold border-b-2 ${activeTab === "posts" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
+            >
+              Posts
+            </button>
+
+            <button
+              role="tab"
+              aria-selected={activeTab === "reposts"}
+              onClick={() => setActiveTab("reposts")}
+              className={`flex-1 text-center px-4 py-3 text-lg font-semibold border-b-2 ${activeTab === "reposts" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
+            >
+              Reposts
+            </button>
+
+            <button
+              role="tab"
+              aria-selected={activeTab === "saved"}
+              onClick={() => setActiveTab("saved")}
+              className={`flex-1 text-right px-4 py-3 text-lg font-semibold border-b-2 ${activeTab === "saved" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
+            >
+              Saved
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          {activeTab === "posts" && (
+            <div>
+              {loadingPosts ? (
+                <p className="text-center text-sm text-text-secondary">Loading posts...</p>
+              ) : posts.length === 0 ? (
+                <p className="text-center text-sm text-text-secondary">No posts yet.</p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {posts.map((post) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === "reposts" && (
+            <div className="text-center text-sm text-text-secondary">Reposts will appear here in a future update.</div>
+          )}
+
+          {activeTab === "saved" && (
+            <div className="text-center text-sm text-text-secondary">Saved posts will appear here in a future update.</div>
+          )}
+        </div>
       </div>
 
-      {/* Mobile-only bottom logout button */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-bg/95 px-4 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg lg:hidden">
-        <div className="mx-auto max-w-2xl py-3">
-          <button
-            onClick={logOut}
-            className="flex w-full items-center justify-center rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white hover:bg-red-600"
-          >
-            Log out
-          </button>
-        </div>
-      </nav>
+      {/* mobile logout moved to Settings page */}
     </div>
   );
 }
