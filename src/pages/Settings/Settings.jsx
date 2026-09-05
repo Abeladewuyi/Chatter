@@ -27,10 +27,7 @@ export default function Settings() {
           <button className="flex items-center justify-between gap-4 px-4 py-3 text-left" onClick={() => navigate('/profile') }>
             <div className="flex items-center gap-3">
               <User size={18} className="text-text-secondary" />
-              <div>
-                <div className="text-lg text-text-primary">{user.displayName || user.email}</div>
-                <div className="text-sm text-text-secondary font-light">Edit Profile</div>
-              </div>
+              <div className="text-lg text-text-primary">{user.displayName || user.email}</div>
             </div>
             <div className="text-text-secondary">›</div>
           </button>
@@ -38,10 +35,7 @@ export default function Settings() {
           <button className="flex items-center justify-between gap-4 px-4 py-3 text-left" onClick={() => navigate('/change-password')}>
             <div className="flex items-center gap-3">
               <Lock size={18} className="text-text-secondary" />
-              <div>
-                <div className="text-lg text-text-primary">Change Password</div>
-                <div className="text-sm text-text-secondary font-light">Update your password</div>
-              </div>
+              <div className="text-lg text-text-primary">Change Password</div>
             </div>
             <div className="text-text-secondary">›</div>
           </button>
@@ -49,10 +43,7 @@ export default function Settings() {
           <button className="flex items-center justify-between gap-4 px-4 py-3 text-left" onClick={() => navigate('/privacy')}>
             <div className="flex items-center gap-3">
               <Shield size={18} className="text-text-secondary" />
-              <div>
-                <div className="text-lg text-text-primary">Privacy</div>
-                <div className="text-sm text-text-secondary font-light">Privacy settings</div>
-              </div>
+              <div className="text-lg text-text-primary">Privacy</div>
             </div>
             <div className="text-text-secondary">›</div>
           </button>
@@ -64,10 +55,7 @@ export default function Settings() {
         <div className="flex items-center justify-between px-4 py-3 rounded-md bg-bg/50">
           <div className="flex items-center gap-3">
             <Bell size={18} className="text-text-secondary" />
-            <div>
-              <div className="text-lg text-text-primary">Push Notifications</div>
-              <div className="text-sm text-text-secondary font-light">Receive push notifications</div>
-            </div>
+            <div className="text-lg text-text-primary">Push Notifications</div>
           </div>
 
           <button
@@ -86,10 +74,7 @@ export default function Settings() {
           <button className="flex items-center justify-between gap-4 px-4 py-3 text-left" onClick={() => navigate('/help') }>
             <div className="flex items-center gap-3">
               <LifeBuoy size={18} className="text-text-secondary" />
-              <div>
-                <div className="text-lg text-text-primary">Help Center</div>
-                <div className="text-sm text-text-secondary font-light">Get help and guides</div>
-              </div>
+              <div className="text-lg text-text-primary">Help Center</div>
             </div>
             <div className="text-text-secondary">›</div>
           </button>
@@ -97,10 +82,7 @@ export default function Settings() {
           <button className="flex items-center justify-between gap-4 px-4 py-3 text-left" onClick={() => navigate('/report') }>
             <div className="flex items-center gap-3">
               <AlertCircle size={18} className="text-text-secondary" />
-              <div>
-                <div className="text-lg text-text-primary">Report a Problem</div>
-                <div className="text-sm text-text-secondary font-light">Send feedback or report bugs</div>
-              </div>
+              <div className="text-lg text-text-primary">Report a Problem</div>
             </div>
             <div className="text-text-secondary">›</div>
           </button>
