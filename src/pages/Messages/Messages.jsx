@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { Link, useParams } from "react-router-dom";
-import { Send, ArrowLeft, PlusSquare, Search as SearchIcon, MoreVertical } from "lucide-react";
+import { Send, ArrowLeft, PlusSquare, Search as SearchIcon, MoreVertical, Phone } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase/config";
 import { useUserProfile } from "../../hooks/useUserProfile";
@@ -193,6 +193,28 @@ function formatTime(timestamp) {
   return timestamp.toDate().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+function getPresenceLabel(profile) {
+  if (!profile) return "offline";
+
+  if (profile.online === true) return "online";
+
+  if (profile.lastSeen) {
+    const lastSeen = profile.lastSeen?.toDate ? profile.lastSeen.toDate() : new Date(profile.lastSeen);
+    const diffMinutes = Math.max(0, Math.floor((Date.now() - lastSeen.getTime()) / 60000));
+
+    if (diffMinutes === 0) return "online";
+    if (diffMinutes < 60) return `last seen ${diffMinutes} min`;
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `last seen ${diffHours}h`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    return `last seen ${diffDays}d`;
+  }
+
+  return "offline";
+}
+
 function ChatWindow({ myUid, otherUid }) {
   const { profile: otherProfile } = useUserProfile(otherUid);
   const [conversationId, setConversationId] = useState(null);
@@ -242,25 +264,68 @@ function ChatWindow({ myUid, otherUid }) {
     }
   }
 
+  function handleBack() {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.location.href = "/";
+  }
+
   return (
-    <div className="relative flex h-[calc(100vh-3rem)] flex-col pt-10">
-      <div className="absolute left-0 top-0 z-10 flex w-full items-center gap-3 border-b border-border bg-bg pb-3 pt-2">
-        <Link to="/messages" className="ml-0 text-text-secondary hover:text-accent">
-          <ArrowLeft size={20} />
-        </Link>
-        <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent ring-1 ring-white">
-          {otherProfile?.photoURL ? (
-            <img src={otherProfile.photoURL} alt="" className="h-full w-full object-cover" />
-          ) : (
-            otherProfile?.displayName?.charAt(0).toUpperCase() || "?"
-          )}
+    <div className="flex h-[calc(100vh-3rem)] flex-col bg-black">
+      <div className="sticky top-0 z-10 flex w-full items-center justify-between gap-3 border-b border-black bg-black pb-3 pt-2">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="ml-0 text-white/80 hover:text-white"
+            aria-label="Go back"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-semibold text-black">
+            {otherProfile?.photoURL ? (
+              <img src={otherProfile.photoURL} alt="" className="h-full w-full object-cover" />
+            ) : (
+              otherProfile?.displayName?.charAt(0).toUpperCase() || "?"
+            )}
+          </div>
+          <div className="flex flex-col leading-tight">
+            <p className="text-sm font-medium text-white">
+              {otherProfile?.displayName || "..."}
+            </p>
+            <p
+              className={`text-[10px] ${
+                otherProfile?.online === true
+                  ? "text-green-400"
+                  : "text-gray-400"
+              }`}
+            >
+              {getPresenceLabel(otherProfile)}
+            </p>
+          </div>
         </div>
-        <p className="text-sm font-medium text-text-primary">
-          {otherProfile?.displayName || "..."}
-        </p>
+
+        <div className="flex items-center gap-3 pr-1">
+          <button
+            type="button"
+            aria-label="Call"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 transition hover:bg-white/5 hover:text-white"
+          >
+            <Phone size={18} />
+          </button>
+          <button
+            type="button"
+            aria-label="More options"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 transition hover:bg-white/5 hover:text-white"
+          >
+            <MoreVertical size={18} />
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 space-y-2 overflow-y-auto">
+      <div className="flex-1 space-y-2 overflow-y-auto bg-black pt-0">
         {loading && <p className="text-sm text-text-secondary">Loading messages...</p>}
 
         {!loading && messages.length === 0 && (
@@ -272,22 +337,16 @@ function ChatWindow({ myUid, otherUid }) {
           return (
             <div key={message.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
               <div
-                className={`max-w-xs rounded-2xl px-3 py-1.5 text-sm ${
-                  // Fixed: bg-accent is WHITE in this monochrome theme, so
-                  // "text-white" on it would be invisible. text-on-accent
-                  // flips correctly with the theme (black in dark mode,
-                  // white in light mode). The received bubble now uses a
-                  // clearly distinct surface tone plus a border so it
-                  // doesn't blend into the page background.
+                className={`max-w-[calc(100%-0.75rem)] rounded-2xl px-3 py-1.5 text-sm ${
                   isMine
-                    ? "bg-accent text-on-accent"
-                    : "border border-border bg-surface-2 text-text-primary"
+                    ? "bg-[#0f0542] text-white"
+                    : "bg-[#121214] text-white"
                 }`}
               >
                 <p className="whitespace-pre-wrap">{message.text}</p>
                 <p
                   className={`mt-1 text-xs ${
-                    isMine ? "text-on-accent/70" : "text-text-muted"
+                    isMine ? "text-gray-400" : "text-gray-400"
                   }`}
                 >
                   {formatTime(message.createdAt)}
@@ -298,19 +357,19 @@ function ChatWindow({ myUid, otherUid }) {
         })}
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-4 flex gap-2 border-t border-border pt-4">
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2 border-t border-black bg-black pt-4">
         <input
           type="text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           maxLength={1000}
           placeholder="Type a message..."
-          className="flex-1 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text-primary outline-none focus:border-accent"
+          className="flex-1 rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/20"
         />
         <button
           type="submit"
           disabled={sending || !text.trim()}
-          className="flex items-center justify-center rounded-lg bg-accent px-4 py-2 text-on-accent hover:bg-accent-hover disabled:opacity-50"
+          className="flex items-center justify-center rounded-lg bg-white px-4 py-2 text-black hover:bg-zinc-200 disabled:opacity-50"
         >
           <Send size={16} />
         </button>
