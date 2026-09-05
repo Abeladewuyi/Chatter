@@ -64,6 +64,98 @@ body {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: var(--color-bg);
+}
+
+.typing-logo-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  height: 78px;
+  padding: 0 1.25rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.04), 0 0 30px rgba(124, 58, 237, 0.12);
+  overflow: hidden;
+}
+
+.typing-logo-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.14) 20%,
+    rgba(168, 85, 247, 0.38) 38%,
+    rgba(96, 165, 250, 0.35) 52%,
+    rgba(255, 255, 255, 0.12) 68%,
+    transparent 100%
+  );
+  transform: translateX(-30%) rotate(12deg);
+  animation: shineSweep 3.2s ease-in-out infinite;
+}
+
+.typing-logo-text {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, #f8fafc 0%, #dbeafe 18%, #c4b5fd 36%, #f5d0fe 52%, #ffffff 68%, #bfdbfe 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-transform: none;
+  text-shadow: 0 0 20px rgba(192, 132, 252, 0.22);
+  animation: textGlow 3s ease-in-out infinite alternate;
+}
+
+.typing-cursor {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  width: 3px;
+  height: 2.2rem;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #c4b5fd 50%, #60a5fa 100%);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.8), 0 0 20px rgba(96, 165, 250, 0.6);
+  animation: blink 0.8s steps(1) infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+@keyframes shineSweep {
+  0% { transform: translateX(-40%) rotate(12deg); }
+  50% { transform: translateX(20%) rotate(12deg); }
+  100% { transform: translateX(40%) rotate(12deg); }
+}
+
+@keyframes textGlow {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(196, 181, 253, 0.4));
+    background-position: 0% 50%;
+  }
+  100% {
+    filter: drop-shadow(0 0 22px rgba(147, 197, 253, 0.55));
+    background-position: 100% 50%;
+  }
+}
+
 /* Shiny animated overlay used on auth pages while retaining the base black background */
 .bg-shiny {
   background-color: var(--color-bg);

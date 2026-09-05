@@ -13,6 +13,7 @@ import CreatePost from "./pages/CreatePost/CreatePost";
 import Explore from "./pages/Explore/Explore";
 import Notifications from "./pages/Notifications/Notifications";
 import Messages from "./pages/Messages/Messages";
+import NewMessage from "./pages/Messages/NewMessage";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import Privacy from "./pages/Privacy/Privacy";
 import Help from "./pages/Help/Help";
@@ -94,6 +95,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Messages />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/messages/new"
+              element={
+                <ProtectedRoute>
+                  <NewMessage />
                 </ProtectedRoute>
               }
             />

@@ -9,6 +9,7 @@ import { useNotifications } from "../../hooks/useNotifications";
 import { useUnreadMessageCount } from "../../hooks/useUnreadMessageCount";
 import PostCard from "../../components/PostCard/PostCard";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
+import MobileNav from "../../components/MobileNav/MobileNav";
 
 function NotificationBadge({ count, color = "bg-accent" }) {
   if (count === 0) return null;
@@ -28,7 +29,7 @@ export default function Home() {
   const { profile } = useUserProfile(uid);
   const { followingIds, loading: loadingFollowing } = useFollowingIds(uid);
   const authorIds = uid ? [...new Set([uid, ...followingIds])] : [];
- const { posts, loading: loadingPosts, error } = usePosts(authorIds);
+  const { posts, loading: loadingPosts, error } = usePosts(authorIds);
   const loading = loadingFollowing || loadingPosts;
   const { unreadCount } = useNotifications(uid);
   const { unreadMessageCount } = useUnreadMessageCount(uid);
@@ -41,58 +42,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-bg">
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-5 sm:px-6 lg:px-8">
-        {/* Desktop sidebar — only visible at lg breakpoint and up */}
         <aside className="sticky top-5 hidden h-[calc(100vh-2.5rem)] w-56 shrink-0 flex-col lg:flex">
           <img src={gridspaceLogo} alt="Gridspace" className="h-8 w-auto" />
 
-          <nav className="mt-10 flex flex-col gap-2">
-            <Link
-              to="/"
-              className="rounded-xl bg-surface-2 px-4 py-3 text-sm font-medium text-accent"
-            >
-              Home
-            </Link>
-
-            <Link
-              to="/explore"
-              className="rounded-xl px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface hover:text-text-primary"
-            >
-              Explore
-            </Link>
-
-            <Link
-              to="/notifications"
-              className="relative flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface hover:text-text-primary"
-            >
-              <span className="relative">
-                <Bell size={16} />
-                <NotificationBadge count={unreadCount} />
-              </span>
-              Notifications
-            </Link>
-
-            <Link
-              to="/messages"
-              className="relative flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface hover:text-text-primary"
-            >
-              <span className="relative">
-                <Mail size={16} />
-                <NotificationBadge count={unreadMessageCount} color="bg-red-500" />
-              </span>
-              Messages
-            </Link>
-
-            <Link
-              to="/profile"
-              className="rounded-xl px-4 py-3 text-sm font-medium text-text-secondary hover:bg-surface hover:text-text-primary"
-            >
-              Profile
-            </Link>
-          </nav>
+         <MobileNav />
 
           <Link
             to="/create-post"
-            className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white hover:bg-accent-hover"
+            className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-on-accent hover:bg-accent-hover"
           >
             <Plus size={18} />
             Create post
@@ -124,9 +81,7 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* Main feed */}
         <main className="min-w-0 w-full max-w-2xl pb-24 lg:pb-0">
-          {/* Mobile header */}
           <header className="mb-8 flex items-center justify-between pr-14 lg:hidden">
             <img src={gridspaceLogo} alt="Gridspace" className="h-8 w-auto" />
 
@@ -146,7 +101,6 @@ export default function Home() {
             <p className="mt-1 text-sm text-text-secondary">Catch up with your community.</p>
           </div>
 
-          {/* Post composer shortcut */}
           <Link
             to="/create-post"
             className="mb-5 block rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-accent"
@@ -167,15 +121,15 @@ export default function Home() {
             </div>
           </Link>
 
-{loading && <p className="py-8 text-center text-sm text-text-secondary">Loading feed...</p>}
+          {loading && <p className="py-8 text-center text-sm text-text-secondary">Loading feed...</p>}
 
-{error && posts.length === 0 && (
-  <p className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-400">
-    Couldn't load posts. Please refresh.
-  </p>
-)}
+          {error && posts.length === 0 && (
+            <p className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-400">
+              Couldn't load posts. Please refresh.
+            </p>
+          )}
 
-{!loading && posts.length === 0 && followingIds.length === 0 && (
+          {!loading && posts.length === 0 && followingIds.length === 0 && (
             <div className="rounded-2xl border border-border bg-surface p-8 text-center">
               <h2 className="text-lg font-semibold text-text-primary">Your feed is empty</h2>
               <p className="mt-2 text-sm text-text-secondary">
@@ -185,7 +139,7 @@ export default function Home() {
               <div className="mt-5">
                 <Link
                   to="/explore"
-                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
+                  className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-on-accent hover:bg-accent-hover"
                 >
                   Find people to follow →
                 </Link>
@@ -199,58 +153,13 @@ export default function Home() {
             </div>
           )}
 
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col">
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>
         </main>
       </div>
-
-      {/* Mobile bottom navigation — sits OUTSIDE the desktop sidebar so it
-          actually gets to render on small screens. lg:hidden hides it once
-          the desktop sidebar takes over. */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-bg/95 backdrop-blur-lg lg:hidden">
-        <div className="grid h-16 grid-cols-4">
-          <Link
-            to="/"
-            className="flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
-          >
-            <HomeIcon size={20} />
-            <span className="text-[10px] font-medium">Home</span>
-          </Link>
-
-          <Link
-            to="/messages"
-            className="relative flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
-          >
-            <span className="relative">
-              <Mail size={20} />
-              <NotificationBadge count={unreadMessageCount} color="bg-red-500" />
-            </span>
-            <span className="text-[10px] font-medium">Messages</span>
-          </Link>
-
-          <Link
-            to="/notifications"
-            className="relative flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
-          >
-            <span className="relative">
-              <Bell size={20} />
-              <NotificationBadge count={unreadCount} />
-            </span>
-            <span className="text-[10px] font-medium">Notifications</span>
-          </Link>
-
-          <Link
-            to="/profile"
-            className="flex flex-col items-center justify-center gap-1 text-text-secondary hover:text-accent"
-          >
-            <User size={20} />
-            <span className="text-[10px] font-medium">Profile</span>
-          </Link>
-        </div>
-      </nav>
     </div>
   );
 }

@@ -42,7 +42,7 @@ export default function Profile() {
           </Link>
         </div>
 
-        <h2 className="absolute inset-x-0 top-0 text-center text-lg font-semibold text-text-primary">
+        <h2 className="absolute inset-x-0 top-0 text-center text-base font-semibold text-text-primary">
           Profile
         </h2>
 
@@ -71,7 +71,7 @@ export default function Profile() {
               role="tab"
               aria-selected={activeTab === "posts"}
               onClick={() => setActiveTab("posts")}
-              className={`flex-1 text-left px-4 py-3 text-lg font-semibold border-b-2 ${activeTab === "posts" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
+              className={`flex-1 text-left px-3 py-2.5 text-base font-semibold border-b-2 ${activeTab === "posts" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
             >
               Posts
             </button>
@@ -80,7 +80,7 @@ export default function Profile() {
               role="tab"
               aria-selected={activeTab === "reposts"}
               onClick={() => setActiveTab("reposts")}
-              className={`flex-1 text-center px-4 py-3 text-lg font-semibold border-b-2 ${activeTab === "reposts" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
+              className={`flex-1 text-center px-3 py-2.5 text-base font-semibold border-b-2 ${activeTab === "reposts" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
             >
               Reposts
             </button>
@@ -89,7 +89,7 @@ export default function Profile() {
               role="tab"
               aria-selected={activeTab === "saved"}
               onClick={() => setActiveTab("saved")}
-              className={`flex-1 text-right px-4 py-3 text-lg font-semibold border-b-2 ${activeTab === "saved" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
+              className={`flex-1 text-right px-3 py-2.5 text-base font-semibold border-b-2 ${activeTab === "saved" ? "text-text-primary border-white" : "text-text-secondary border-transparent"}`}
             >
               Saved
             </button>

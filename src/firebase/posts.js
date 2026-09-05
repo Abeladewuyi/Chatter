@@ -10,13 +10,15 @@ import { db } from "./config";
  * Trade-off: if the author later changes their name/photo, old posts still
  * show what they looked like at posting time. That's normal for social apps.
  */
-export async function createPost({ authorId, authorUsername, authorDisplayName, authorPhotoURL, text }) {
+export async function createPost({ authorId, authorUsername, authorDisplayName, authorPhotoURL, text, tags = [], poll = null }) {
   await addDoc(collection(db, "posts"), {
     authorId,
     authorUsername,
     authorDisplayName,
     authorPhotoURL: authorPhotoURL || "",
     text,
+    tags,
+    poll,
     likesCount: 0,
     commentsCount: 0,
     createdAt: serverTimestamp(),

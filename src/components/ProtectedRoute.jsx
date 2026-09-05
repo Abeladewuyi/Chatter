@@ -1,6 +1,7 @@
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import MobileNav from "./MobileNav";
+import MobileNav from "./MobileNav/MobileNav";
 
 /**
  * Wrap any page element with this to require login:
@@ -13,11 +14,43 @@ import MobileNav from "./MobileNav";
  */
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
+  const [typedText, setTypedText] = useState("");
+
+  const hideBottomNav =
+    location.pathname === "/create-post" ||
+    location.pathname === "/settings" ||
+    location.pathname.startsWith("/profile") ||
+    location.pathname.startsWith("/messages");
+
+  useEffect(() => {
+    if (!loading) return;
+
+    const fullText = "Gridspace";
+    let index = 0;
+
+    const timer = setInterval(() => {
+      index += 1;
+      setTypedText(fullText.slice(0, index));
+
+      if (index >= fullText.length) {
+        setTimeout(() => {
+          setTypedText("");
+          index = 0;
+        }, 550);
+      }
+    }, 180);
+
+    return () => clearInterval(timer);
+  }, [loading]);
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-bg text-text-secondary">
-        Loading...
+      <div className="loading-screen">
+        <div className="typing-logo-wrap" aria-live="polite" aria-label="Loading Gridspace">
+          <span className="typing-logo-text">{typedText}</span>
+          <span className="typing-cursor" aria-hidden="true" />
+        </div>
       </div>
     );
   }
@@ -27,9 +60,9 @@ export default function ProtectedRoute({ children }) {
   }
 
   return (
-  <>
-    {children}
-    <MobileNav />
-  </>
-);
+    <>
+      {children}
+      {!hideBottomNav && <MobileNav />}
+    </>
+  );
 }
