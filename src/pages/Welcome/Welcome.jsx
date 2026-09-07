@@ -5,6 +5,7 @@ import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight } 
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 import femaleDesigner from "../../assets/Femaledesigner.png";
 import maleProgrammer from "../../assets/maleprogrammer.png";
+import figmaDesign from "../../assets/figmadesign.jpg";
 
 const SLIDES = [
   {
@@ -171,7 +172,7 @@ function CommunityVisual() {
   return (
     <>
       <div className="absolute left-0 top-2 w-36 -rotate-6 overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-2xl">
-        <img src={femaleDesigner} alt="Female designer" className="h-28 w-full object-cover" />
+        <img src={figmaDesign} alt="Figma design concept" className="h-28 w-full object-cover" />
         <div className="flex items-center gap-2 bg-surface p-3">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/70 text-white">
             <Palette size={14} />
