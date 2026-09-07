@@ -167,14 +167,25 @@ export default function Welcome() {
   );
 }
 
-// --- Slide 1: Community — floating profile cards, matches your reference ---
+// --- Slide 1: Community — polished, minimal, and premium ---
 function CommunityVisual() {
   return (
-    <>
-      <div className="absolute left-0 top-2 w-36 -rotate-6 overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-2xl">
+    <div className="relative h-full w-full">
+      <div className="absolute inset-x-2 top-2 h-44 rounded-[28px] border border-white/10 bg-gradient-to-br from-white/[0.05] via-white/[0.02] to-transparent shadow-[0_20px_60px_rgba(0,0,0,0.42)]" />
+
+      <div className="absolute right-3 top-0 flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-2.5 py-1.5 backdrop-blur-md">
+        <img
+          src={maleProgrammer}
+          alt="Male programmer"
+          className="h-8 w-8 rounded-full border-2 border-[#0d0d0d] object-cover"
+        />
+        <span className="text-[10px] font-medium text-text-primary">12+ makers</span>
+      </div>
+
+      <div className="absolute left-0 top-8 w-36 -rotate-6 overflow-hidden rounded-[20px] border border-white/10 bg-surface shadow-[0_18px_35px_rgba(0,0,0,0.45)]">
         <img src={figmaDesign} alt="Figma design concept" className="h-28 w-full object-cover" />
-        <div className="flex items-center gap-2 bg-surface p-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/70 text-white">
+        <div className="flex items-center gap-2 bg-surface px-3 py-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 text-white">
             <Palette size={14} />
           </div>
           <div className="min-w-0">
@@ -184,44 +195,37 @@ function CommunityVisual() {
         </div>
       </div>
 
-      <div className="animate-float absolute right-2 top-0 flex -space-x-3">
-        <img
-          src={maleProgrammer}
-          alt="Male programmer"
-          className="h-16 w-16 rounded-full border-2 border-[#0f1115] object-cover shadow-2xl"
-        />
-        <img
-          src={femaleDesigner}
-          alt="Female designer"
-          className="h-16 w-16 rounded-full border-2 border-[#0f1115] object-cover shadow-2xl"
-        />
-      </div>
-
-      <div
-        className="animate-float absolute left-2 top-28 overflow-hidden rounded-full border border-white/10 bg-surface shadow-2xl"
-        style={{ animationDelay: "1.2s" }}
-      >
-        <img src={maleProgrammer} alt="Male programmer" className="h-16 w-16 object-cover" />
-      </div>
-
-      <div className="absolute right-0 top-24 w-40 rounded-2xl border border-white/10 bg-white/90 p-3 text-black shadow-2xl backdrop-blur-sm">
-        <div className="flex items-center gap-2">
+      <div className="absolute right-0 top-20 w-40 rounded-[22px] border border-white/10 bg-white/90 p-3 text-black shadow-[0_18px_38px_rgba(0,0,0,0.28)] backdrop-blur-sm">
+        <div className="flex items-center justify-between">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black text-white">
             <Palette size={14} />
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-xs font-semibold">Color palette</p>
-            <p className="text-[10px] text-neutral-500">Fresh ideas</p>
+          <span className="rounded-full bg-black/5 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-black/60">
+            Live
+          </span>
+        </div>
+        <div className="mt-2">
+          <p className="text-[10px] font-semibold">Color palette</p>
+          <div className="mt-2 flex gap-1.5">
+            <span className="h-4 w-4 rounded-sm bg-[#F3D0A8]" />
+            <span className="h-4 w-4 rounded-sm bg-[#B88DFF]" />
+            <span className="h-4 w-4 rounded-sm bg-[#8FD3FF]" />
+            <span className="h-4 w-4 rounded-sm bg-[#2C2C2C]" />
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-8 flex items-center gap-2 rounded-full border border-white/10 bg-surface/90 py-1.5 pl-1.5 pr-3 shadow-lg backdrop-blur-sm">
-        <img src={maleProgrammer} alt="Male programmer" className="h-7 w-7 rounded-full object-cover" />
-        <span className="text-xs font-medium text-text-primary">alex.dev</span>
+      <div className="absolute bottom-0 left-8 flex items-center gap-2 rounded-full border border-white/10 bg-surface/90 px-2 py-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.3)] backdrop-blur-sm">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-white/10 to-white/5 text-[10px] font-semibold text-text-primary">
+          <Palette size={12} />
+        </div>
+        <div className="leading-none">
+          <span className="block text-[10px] font-medium text-text-primary">Design review</span>
+          <span className="block text-[8px] text-text-muted">2 mins ago</span>
+        </div>
         <ChevronRight size={12} className="text-text-muted" />
       </div>
-    </>
+    </div>
   );
 }
 
