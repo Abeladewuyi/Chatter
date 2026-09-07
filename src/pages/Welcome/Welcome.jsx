@@ -6,6 +6,13 @@ import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 import femaleDesigner from "../../assets/Femaledesigner.png";
 import maleProgrammer from "../../assets/maleprogrammer.png";
 import figmaDesign from "../../assets/figmadesign.jpg";
+import techIndustry from "../../assets/tech-industry.jpg";
+import techCommunity from "../../assets/tech-community.jpg";
+import {
+  Code2,
+  TrendingUp,
+  Sparkles,
+} from "lucide-react";
 
 const SLIDES = [
   {
@@ -343,46 +350,157 @@ function CommunityVisual() {
   );
 }
 // --- Slide 2: Share your work — a mini feed-post mockup ---
-function ShareVisual() {
+// --- Slide 2: Discover Tech ---
+function DiscoverVisual() {
   return (
-    <>
-      <div className="animate-float absolute right-4 top-0 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-600 to-black text-white shadow-2xl">
-        <Sparkles size={20} />
-      </div>
+    <div className="relative h-full w-full">
 
-      <div className="absolute left-0 top-6 w-52 rounded-2xl border border-border bg-surface p-4 shadow-2xl">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-neutral-500 to-neutral-800" />
-          <div>
-            <p className="text-xs font-semibold text-text-primary">mickey_can_code</p>
-            <p className="text-[10px] text-text-muted">2h ago</p>
+      {/* Background glow */}
+      <div className="absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/15 blur-3xl" />
+
+      {/* Main technology image */}
+      <motion.div
+        initial={{ opacity: 0, y: 25, rotate: -3 }}
+        animate={{ opacity: 1, y: 0, rotate: -3 }}
+        transition={{ duration: 0.6 }}
+        className="absolute left-1/2 top-2 z-10 w-[255px] -translate-x-1/2 overflow-hidden rounded-3xl border border-white/15 bg-[#15151b] p-1.5 shadow-2xl"
+      >
+        <div className="relative overflow-hidden rounded-[20px]">
+          <img
+            src={techIndustry}
+            alt="Technology and innovation"
+            className="h-[185px] w-full object-cover"
+          />
+
+          {/* Dark gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+          {/* Image label */}
+          <div className="absolute bottom-3 left-3">
+            <div className="mb-1 flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-green-400" />
+              <span className="text-[8px] font-medium text-white/80">
+                TRENDING NOW
+              </span>
+            </div>
+
+            <p className="text-sm font-bold text-white">
+              The future is tech
+            </p>
           </div>
         </div>
-        <p className="mt-3 text-[11px] leading-snug text-text-secondary">
-          me looking at code I wrote 1 month ago 💀
-        </p>
-        <div className="mt-3 flex items-center gap-3 text-text-muted">
-          <span className="text-[10px]">♥ 21.5k</span>
-          <span className="text-[10px]">💬 3.1k</span>
+
+        {/* Bottom information */}
+        <div className="flex items-center justify-between px-2.5 py-2.5">
+          <div>
+            <p className="text-[9px] font-semibold text-white">
+              Technology & Innovation
+            </p>
+            <p className="text-[8px] text-white/40">
+              24.8K people discussing
+            </p>
+          </div>
+
+          <div className="flex -space-x-1.5">
+            <div className="h-5 w-5 rounded-full border-2 border-[#15151b] bg-purple-400" />
+            <div className="h-5 w-5 rounded-full border-2 border-[#15151b] bg-blue-400" />
+            <div className="h-5 w-5 rounded-full border-2 border-[#15151b] bg-pink-400" />
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div
-        className="animate-float absolute bottom-4 left-10 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-neutral-700 to-neutral-900 text-white shadow-xl"
-        style={{ animationDelay: "0.8s" }}
+      {/* Tech community card */}
+      <motion.div
+        initial={{ opacity: 0, x: -25, y: 10 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 0.55, delay: 0.25 }}
+        className="absolute -left-1 bottom-8 z-20 w-[150px] overflow-hidden rounded-2xl border border-white/15 bg-[#17171d] shadow-xl"
       >
-        <Code2 size={18} />
-      </div>
+        <img
+          src={techCommunity}
+          alt="Developers collaborating"
+          className="h-[82px] w-full object-cover"
+        />
 
-      <div className="absolute bottom-0 right-2 w-36 rotate-3 rounded-2xl bg-white p-3 text-black shadow-2xl">
-        <p className="text-[10px] font-semibold">5 Design Industry Shifts</p>
-        <div className="mt-2 h-1.5 w-full rounded-full bg-neutral-200" />
-        <div className="mt-1.5 h-1.5 w-2/3 rounded-full bg-neutral-200" />
-      </div>
-    </>
+        <div className="p-2.5">
+          <div className="mb-1 flex items-center gap-1">
+            <Code2 size={10} className="text-accent" />
+            <span className="text-[8px] font-semibold text-white/90">
+              DEV COMMUNITY
+            </span>
+          </div>
+
+          <p className="text-[9px] font-medium text-white">
+            Build together
+          </p>
+
+          <p className="mt-0.5 text-[7px] text-white/40">
+            8.2K active members
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Trending topics */}
+      <motion.div
+        initial={{ opacity: 0, x: 25, y: 10 }}
+        animate={{ opacity: 1, x: 0, y: 0 }}
+        transition={{ duration: 0.55, delay: 0.4 }}
+        className="absolute -right-1 bottom-12 z-20 w-[125px] rounded-2xl border border-white/15 bg-[#17171d]/95 p-3 shadow-xl backdrop-blur-md"
+      >
+        <div className="mb-2 flex items-center gap-1.5">
+          <TrendingUp size={11} className="text-accent" />
+
+          <span className="text-[9px] font-semibold text-white">
+            Trending
+          </span>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <span className="text-[8px] text-white/60">
+              #AI
+            </span>
+            <span className="text-[7px] text-white/30">
+              12.4K
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-[8px] text-white/60">
+              #WebDev
+            </span>
+            <span className="text-[7px] text-white/30">
+              8.7K
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-[8px] text-white/60">
+              #React
+            </span>
+            <span className="text-[7px] text-white/30">
+              6.3K
+            </span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Floating Explore badge */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
+        className="absolute right-4 top-0 z-30 flex items-center gap-1.5 rounded-full border border-white/15 bg-accent px-3 py-1.5 shadow-lg shadow-accent/20"
+      >
+        <Sparkles size={10} className="text-on-accent" />
+        <span className="text-[8px] font-bold text-on-accent">
+          EXPLORE
+        </span>
+      </motion.div>
+
+    </div>
   );
 }
-
 // --- Slide 3: Business ideas — collaboration / pitch mockup ---
 function IdeasVisual() {
   return (
