@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight } from "lucide-react";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
+import femaleDesigner from "../../assets/Femaledesigner.png";
+import maleProgrammer from "../../assets/maleprogrammer.png";
+import figmaDesign from "../../assets/figmadesign.jpg";
 
 const SLIDES = [
   {
@@ -165,49 +168,180 @@ export default function Welcome() {
 }
 
 // --- Slide 1: Community — floating profile cards, matches your reference ---
+// --- Slide 1: Community — programmer + designer ---
 function CommunityVisual() {
   return (
-    <>
-      <div className="absolute left-0 top-2 w-36 -rotate-6 rounded-2xl border border-border bg-surface p-3 shadow-2xl">
-        <Code2 size={16} className="text-text-muted" />
-        <div className="mt-3 h-2 w-full rounded-full bg-surface-2" />
-        <div className="mt-1.5 h-2 w-2/3 rounded-full bg-surface-2" />
-      </div>
+    <div className="relative h-full w-full">
 
-      <div className="animate-float absolute right-2 top-0 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-500 to-neutral-800 text-white shadow-2xl">
-        <Users size={22} />
-      </div>
+      {/* Soft background glow */}
+      <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-3xl" />
 
-      <div
-        className="animate-float absolute left-2 top-28 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-700 to-black text-white shadow-2xl"
-        style={{ animationDelay: "1.2s" }}
+      {/* =========================
+          PROGRAMMER CODE CARD
+         ========================= */}
+      <motion.div
+        initial={{ opacity: 0, y: 20, rotate: -4 }}
+        animate={{ opacity: 1, y: 0, rotate: -4 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+        className="absolute left-0 top-5 z-10 w-[210px] overflow-hidden rounded-2xl border border-white/10 bg-[#111116] shadow-2xl"
       >
-        <Palette size={22} />
-      </div>
+        {/* Editor header */}
+        <div className="flex items-center gap-1.5 border-b border-white/10 px-3 py-2.5">
+          <span className="h-2 w-2 rounded-full bg-red-400/70" />
+          <span className="h-2 w-2 rounded-full bg-yellow-400/70" />
+          <span className="h-2 w-2 rounded-full bg-green-400/70" />
 
-      <div className="absolute right-0 top-24 w-40 rounded-2xl bg-white p-3 text-black shadow-2xl">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black text-white">
-            <Palette size={14} />
+          <span className="ml-auto text-[8px] text-white/30">
+            app.jsx
+          </span>
+        </div>
+
+        {/* Code */}
+        <div className="px-3 py-3 font-mono text-[8px] leading-[1.8]">
+          <div>
+            <span className="text-purple-400">const</span>{" "}
+            <span className="text-blue-300">Profile</span>{" "}
+            <span className="text-white/50">=</span>{" "}
+            <span className="text-purple-400">()</span>{" "}
+            <span className="text-white/50">=&gt;</span>
           </div>
+
+          <div className="pl-3">
+            <span className="text-white/50">return</span>{" "}
+            <span className="text-white/70">(</span>
+          </div>
+
+          <div className="pl-6">
+            <span className="text-blue-300">&lt;div</span>{" "}
+            <span className="text-purple-300">className</span>
+            <span className="text-white/50">=</span>
+            <span className="text-green-300">"profile"</span>
+            <span className="text-blue-300">&gt;</span>
+          </div>
+
+          <div className="pl-9">
+            <span className="text-blue-300">&lt;h2&gt;</span>
+            <span className="text-white/80">Build. Share. Grow.</span>
+            <span className="text-blue-300">&lt;/h2&gt;</span>
+          </div>
+
+          <div className="pl-9">
+            <span className="text-blue-300">&lt;p&gt;</span>
+            <span className="text-white/50">
+              {" "}
+              Connect with creators.
+            </span>
+            <span className="text-blue-300">&lt;/p&gt;</span>
+          </div>
+
+          <div className="pl-6">
+            <span className="text-blue-300">&lt;/div&gt;</span>
+          </div>
+
+          <div className="pl-3">
+            <span className="text-white/50">);</span>
+          </div>
+
+          <div>
+            <span className="text-white/50">{"}"}</span>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Programmer floating profile */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, x: -15 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        className="absolute -left-1 bottom-5 z-30 flex items-center gap-2 rounded-full border border-white/10 bg-[#18181d]/95 py-1.5 pl-1.5 pr-3 shadow-xl backdrop-blur-md"
+      >
+        <img
+          src={maleProgrammer}
+          alt="Programmer"
+          className="h-8 w-8 rounded-full object-cover ring-2 ring-accent/30"
+        />
+
+        <div>
+          <p className="text-[10px] font-semibold text-text-primary">
+            Alex Carter
+          </p>
+          <p className="text-[8px] text-text-muted">
+            Programmer
+          </p>
+        </div>
+
+        <div className="ml-1 h-1.5 w-1.5 rounded-full bg-green-400" />
+      </motion.div>
+
+      {/* =========================
+          DESIGNER / FIGMA CARD
+         ========================= */}
+      <motion.div
+        initial={{ opacity: 0, y: 25, rotate: 5 }}
+        animate={{ opacity: 1, y: 0, rotate: 5 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="absolute right-0 top-16 z-20 w-[175px] overflow-hidden rounded-2xl border border-white/20 bg-white p-1.5 shadow-2xl"
+      >
+        <img
+          src={figmaDesign}
+          alt="Designer interface"
+          className="h-[128px] w-full rounded-xl object-cover"
+        />
+
+        <div className="flex items-center gap-2 px-1.5 py-2">
+          <div className="h-6 w-6 rounded-lg bg-[#f4f4f5] p-1.5">
+            <Palette size={12} className="text-black" />
+          </div>
+
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold">Concept Design</p>
-            <p className="text-[10px] text-neutral-500">Sade · just now</p>
+            <p className="truncate text-[9px] font-semibold text-black">
+              Mobile App Design
+            </p>
+            <p className="text-[8px] text-neutral-500">
+              Figma · Prototype
+            </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="absolute bottom-0 left-8 flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 shadow-lg">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-neutral-600 to-neutral-900 text-xs font-semibold text-white">
-          A
+      {/* Designer floating profile */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8, x: 15 }}
+        animate={{ opacity: 1, scale: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.65 }}
+        className="absolute right-0 bottom-3 z-30 flex items-center gap-2 rounded-full border border-white/10 bg-white/95 py-1.5 pl-1.5 pr-3 shadow-xl"
+      >
+        <img
+          src={femaleDesigner}
+          alt="Designer"
+          className="h-8 w-8 rounded-full object-cover"
+        />
+
+        <div>
+          <p className="text-[10px] font-semibold text-black">
+            Maya Williams
+          </p>
+          <p className="text-[8px] text-neutral-500">
+            UI/UX Designer
+          </p>
         </div>
-        <span className="text-xs font-medium text-text-primary">alex.dev</span>
-        <ChevronRight size={12} className="text-text-muted" />
-      </div>
-    </>
+
+        <div className="ml-1 h-1.5 w-1.5 rounded-full bg-green-400" />
+      </motion.div>
+
+      {/* Small connection indicator */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: 0.9 }}
+        className="absolute left-1/2 top-1/2 z-40 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-accent shadow-lg shadow-accent/30"
+      >
+        <Users size={17} className="text-on-accent" />
+      </motion.div>
+
+    </div>
   );
 }
-
 // --- Slide 2: Share your work — a mini feed-post mockup ---
 function ShareVisual() {
   return (
