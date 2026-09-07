@@ -3,9 +3,6 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight } from "lucide-react";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
-import femaleDesigner from "../../assets/Femaledesigner.png";
-import maleProgrammer from "../../assets/maleprogrammer.png";
-import figmaDesign from "../../assets/figmadesign.jpg";
 
 const SLIDES = [
   {
@@ -167,67 +164,47 @@ export default function Welcome() {
   );
 }
 
-// --- Slide 1: Community — diagonal post feed with a profile after each post ---
+// --- Slide 1: Community — floating profile cards, matches your reference ---
 function CommunityVisual() {
   return (
-    <div className="relative h-full w-full">
-      <div className="absolute inset-x-2 top-2 h-44 rounded-[28px] border border-white/10 bg-gradient-to-br from-white/[0.05] via-white/[0.02] to-transparent shadow-[0_20px_60px_rgba(0,0,0,0.42)]" />
-
-      <div className="absolute left-0 top-7 w-36 -rotate-6 overflow-hidden rounded-[20px] border border-white/10 bg-surface shadow-[0_18px_35px_rgba(0,0,0,0.45)]">
-        <img src={figmaDesign} alt="Figma design concept" className="h-28 w-full object-cover" />
-        <div className="flex items-center gap-2 bg-surface px-2.5 py-2">
-          <img src={femaleDesigner} alt="Female designer" className="h-7 w-7 rounded-full object-cover" />
-          <div className="min-w-0 leading-none">
-            <p className="truncate text-[10px] font-semibold text-text-primary">maria.design</p>
-            <p className="text-[8px] text-text-muted">UI concept</p>
-          </div>
-        </div>
+    <>
+      <div className="absolute left-0 top-2 w-36 -rotate-6 rounded-2xl border border-border bg-surface p-3 shadow-2xl">
+        <Code2 size={16} className="text-text-muted" />
+        <div className="mt-3 h-2 w-full rounded-full bg-surface-2" />
+        <div className="mt-1.5 h-2 w-2/3 rounded-full bg-surface-2" />
       </div>
 
-      <div className="absolute right-1 top-18 w-40 rotate-[8deg] rounded-[22px] border border-white/10 bg-white/90 p-3 text-black shadow-[0_18px_38px_rgba(0,0,0,0.28)] backdrop-blur-sm">
-        <div className="flex items-center justify-between">
+      <div className="animate-float absolute right-2 top-0 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-500 to-neutral-800 text-white shadow-2xl">
+        <Users size={22} />
+      </div>
+
+      <div
+        className="animate-float absolute left-2 top-28 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-700 to-black text-white shadow-2xl"
+        style={{ animationDelay: "1.2s" }}
+      >
+        <Palette size={22} />
+      </div>
+
+      <div className="absolute right-0 top-24 w-40 rounded-2xl bg-white p-3 text-black shadow-2xl">
+        <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black text-white">
             <Palette size={14} />
           </div>
-          <span className="rounded-full bg-black/5 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-[0.12em] text-black/60">
-            moodboard
-          </span>
-        </div>
-
-        <div className="mt-2 flex gap-1.5">
-          <span className="h-4 w-4 rounded-sm bg-[#F8D7B5]" />
-          <span className="h-4 w-4 rounded-sm bg-[#D7C5FF]" />
-          <span className="h-4 w-4 rounded-sm bg-[#A7D9FF]" />
-          <span className="h-4 w-4 rounded-sm bg-[#191919]" />
-        </div>
-
-        <div className="mt-3 flex items-center gap-2 border-t border-black/5 pt-2">
-          <img src={maleProgrammer} alt="Male programmer" className="h-7 w-7 rounded-full object-cover" />
-          <div className="leading-none">
-            <p className="text-[10px] font-semibold text-black">alex.codes</p>
-            <p className="text-[8px] text-black/60">Product idea</p>
+          <div className="min-w-0">
+            <p className="truncate text-xs font-semibold">Concept Design</p>
+            <p className="text-[10px] text-neutral-500">Sade · just now</p>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-8 w-40 -rotate-2 rounded-[20px] border border-white/10 bg-surface/95 p-3 shadow-[0_16px_30px_rgba(0,0,0,0.35)] backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={maleProgrammer} alt="Male programmer" className="h-8 w-8 rounded-full object-cover" />
-            <div className="leading-none">
-              <p className="text-[10px] font-semibold text-text-primary">nolan.dev</p>
-              <p className="text-[8px] text-text-muted">Launch note</p>
-            </div>
-          </div>
-          <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[7px] text-text-muted">new</span>
+      <div className="absolute bottom-0 left-8 flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 shadow-lg">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-neutral-600 to-neutral-900 text-xs font-semibold text-white">
+          A
         </div>
-
-        <div className="mt-3 flex items-center gap-2">
-          <div className="h-10 flex-1 rounded-lg bg-gradient-to-br from-[#1d1d1d] to-[#444]" />
-          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#d8b4fe] to-[#a5d8ff]" />
-        </div>
+        <span className="text-xs font-medium text-text-primary">alex.dev</span>
+        <ChevronRight size={12} className="text-text-muted" />
       </div>
-    </div>
+    </>
   );
 }
 

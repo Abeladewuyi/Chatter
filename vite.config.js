@@ -23,19 +23,19 @@ export default defineConfig({
 
         icons: [
           {
-            src: '/icons/chatter-icon-192.png',
+            src: '/icons/gridspace-icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/chatter-icon-512.png',
+            src: '/icons/gridspace-icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/icons/chatter-icon-512-maskable.png',
+            src: '/icons/gridspace-icon-512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
@@ -44,9 +44,7 @@ export default defineConfig({
       },
 
       workbox: {
-        cleanupOutdatedCaches: true,
-        sourcemap: false,
-        navigateFallbackDenylist: [/^\/api\//]
+        cleanupOutdatedCaches: true
       },
 
       devOptions: {
