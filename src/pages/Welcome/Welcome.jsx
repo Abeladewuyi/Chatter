@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight } from "lucide-react";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
+import femaleDesigner from "../../assets/Femaledesigner.png";
+import maleProgrammer from "../../assets/maleprogrammer.png";
 
 const SLIDES = [
   {
@@ -168,39 +170,53 @@ export default function Welcome() {
 function CommunityVisual() {
   return (
     <>
-      <div className="absolute left-0 top-2 w-36 -rotate-6 rounded-2xl border border-border bg-surface p-3 shadow-2xl">
-        <Code2 size={16} className="text-text-muted" />
-        <div className="mt-3 h-2 w-full rounded-full bg-surface-2" />
-        <div className="mt-1.5 h-2 w-2/3 rounded-full bg-surface-2" />
+      <div className="absolute left-0 top-2 w-36 -rotate-6 overflow-hidden rounded-2xl border border-white/10 bg-surface shadow-2xl">
+        <img src={femaleDesigner} alt="Female designer" className="h-28 w-full object-cover" />
+        <div className="flex items-center gap-2 bg-surface p-3">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black/70 text-white">
+            <Palette size={14} />
+          </div>
+          <div className="min-w-0">
+            <p className="truncate text-[10px] font-semibold text-text-primary">Concept Design</p>
+            <p className="text-[9px] text-text-muted">Sade · now</p>
+          </div>
+        </div>
       </div>
 
-      <div className="animate-float absolute right-2 top-0 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-500 to-neutral-800 text-white shadow-2xl">
-        <Users size={22} />
+      <div className="animate-float absolute right-2 top-0 flex -space-x-3">
+        <img
+          src={maleProgrammer}
+          alt="Male programmer"
+          className="h-16 w-16 rounded-full border-2 border-[#0f1115] object-cover shadow-2xl"
+        />
+        <img
+          src={femaleDesigner}
+          alt="Female designer"
+          className="h-16 w-16 rounded-full border-2 border-[#0f1115] object-cover shadow-2xl"
+        />
       </div>
 
       <div
-        className="animate-float absolute left-2 top-28 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-700 to-black text-white shadow-2xl"
+        className="animate-float absolute left-2 top-28 overflow-hidden rounded-full border border-white/10 bg-surface shadow-2xl"
         style={{ animationDelay: "1.2s" }}
       >
-        <Palette size={22} />
+        <img src={maleProgrammer} alt="Male programmer" className="h-16 w-16 object-cover" />
       </div>
 
-      <div className="absolute right-0 top-24 w-40 rounded-2xl bg-white p-3 text-black shadow-2xl">
+      <div className="absolute right-0 top-24 w-40 rounded-2xl border border-white/10 bg-white/90 p-3 text-black shadow-2xl backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-black text-white">
             <Palette size={14} />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-xs font-semibold">Concept Design</p>
-            <p className="text-[10px] text-neutral-500">Sade · just now</p>
+            <p className="truncate text-xs font-semibold">Color palette</p>
+            <p className="text-[10px] text-neutral-500">Fresh ideas</p>
           </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-8 flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 shadow-lg">
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-neutral-600 to-neutral-900 text-xs font-semibold text-white">
-          A
-        </div>
+      <div className="absolute bottom-0 left-8 flex items-center gap-2 rounded-full border border-white/10 bg-surface/90 py-1.5 pl-1.5 pr-3 shadow-lg backdrop-blur-sm">
+        <img src={maleProgrammer} alt="Male programmer" className="h-7 w-7 rounded-full object-cover" />
         <span className="text-xs font-medium text-text-primary">alex.dev</span>
         <ChevronRight size={12} className="text-text-muted" />
       </div>
