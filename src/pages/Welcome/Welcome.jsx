@@ -8,6 +8,10 @@ import maleProgrammer from "../../assets/maleprogrammer.png";
 import figmaDesign from "../../assets/figmadesign.jpg";
 import techIndustry from "../../assets/tech-industry.jpg";
 import techCommunity from "../../assets/tech-community.jpg";
+import avery from "../../assets/avery.jpg";
+import jordan from "../../assets/jordan.jpg";
+import mika from "../../assets/mika.jpg";
+import riley from "../../assets/riley.jpg";
 
 const SLIDES = [
   {
@@ -585,9 +589,11 @@ function ConnectVisual() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-300">
-          JD
-        </div>
+<img
+  src={jordan}
+  alt="Jordan"
+  className="h-8 w-8 rounded-full object-cover ring-2 ring-white/10"
+/>
 
         <div>
           <p className="text-[10px] font-semibold text-white">Jordan</p>
@@ -602,9 +608,11 @@ function ConnectVisual() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.15 }}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500/20 text-xs font-bold text-pink-300">
-          AM
-        </div>
+        <img
+          src={avery}
+          alt="Avery"
+          className="h-8 w-8 rounded-full object-cover ring-2 ring-white/10"
+        />
 
         <div>
           <p className="text-[10px] font-semibold text-white">Avery</p>
@@ -619,9 +627,11 @@ function ConnectVisual() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500/20 text-xs font-bold text-cyan-300">
-          MK
-        </div>
+<img
+  src={mika}
+  alt="Mika"
+ className="h-8 w-8 rounded-full object-cover ring-2 ring-white/10"
+/>
 
         <div>
           <p className="text-[10px] font-semibold text-white">Mika</p>
@@ -636,9 +646,11 @@ function ConnectVisual() {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.35 }}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-300">
-          RS
-        </div>
+        <img
+          src={riley}
+          alt="Riley"
+         className="h-8 w-8 rounded-full object-cover ring-2 ring-white/10"
+        />
 
         <div>
           <p className="text-[10px] font-semibold text-white">Riley</p>
