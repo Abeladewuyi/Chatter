@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 import { Link, useParams } from "react-router-dom";
+
 import { Send, ArrowLeft, PlusSquare, Search as SearchIcon, MoreVertical, Phone } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase/config";
@@ -44,13 +45,25 @@ async function markConversationAsUnread(conversationId, messages, myUid) {
   );
 }
 
+// Small numeric badge showing exactly how many unread messages are in this
+// conversation — a plain dot only says "something's unread," this says how much.
+function UnreadCountBadge({ count }) {
+  if (count === 0) return null;
+  return (
+    <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 text-[11px] font-semibold text-on-accent">
+      {count > 9 ? "9+" : count}
+    </span>
+  );
+}
+
 function ConversationRow({ conversation, myUid, searchQuery }) {
   const otherUid = conversation.participants.find((id) => id !== myUid);
   const { profile } = useUserProfile(otherUid);
   const { messages } = useMessages(conversation.id);
-  const hasUnreadMessages = messages.some(
+  const unreadMessages = messages.filter(
     (message) => message.senderId !== myUid && message.read !== true
   );
+  const hasUnreadMessages = unreadMessages.length > 0;
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -122,8 +135,8 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
         </div>
       </Link>
 
-      {/* Unread dot — a quick at-a-glance signal, separate from the menu */}
-      {hasUnreadMessages && <span className="h-2 w-2 shrink-0 rounded-full bg-accent" />}
+      {/* Now shows the actual unread count, not just a plain dot */}
+      <UnreadCountBadge count={unreadMessages.length} />
 
       <div className="relative shrink-0" ref={menuRef}>
         <button
@@ -340,15 +353,16 @@ function ChatWindow({ myUid, otherUid }) {
                 className={`max-w-[calc(100%-0.75rem)] rounded-2xl px-3 py-1.5 text-sm ${
                   isMine
                     ? "bg-[#0f0542] text-white"
-                    : "bg-[#121214] text-white"
+                    // Fixed: #121214 was nearly identical to the pure-black
+                    // page background behind it, so received bubbles were
+                    // basically invisible. zinc-800 + a subtle border gives
+                    // real contrast against black while staying dark/muted
+                    // compared to the sent bubble.
+                    : "border border-white/10 bg-zinc-800 text-white"
                 }`}
               >
                 <p className="whitespace-pre-wrap">{message.text}</p>
-                <p
-                  className={`mt-1 text-xs ${
-                    isMine ? "text-gray-400" : "text-gray-400"
-                  }`}
-                >
+                <p className="mt-1 text-xs text-gray-400">
                   {formatTime(message.createdAt)}
                 </p>
               </div>

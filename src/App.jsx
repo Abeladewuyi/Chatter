@@ -18,6 +18,7 @@ import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import Privacy from "./pages/Privacy/Privacy";
 import Help from "./pages/Help/Help";
 import Report from "./pages/Report/Report";
+import Welcome from "./pages/Welcome/Welcome";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
