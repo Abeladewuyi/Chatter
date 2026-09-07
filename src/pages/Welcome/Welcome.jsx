@@ -8,11 +8,6 @@ import maleProgrammer from "../../assets/maleprogrammer.png";
 import figmaDesign from "../../assets/figmadesign.jpg";
 import techIndustry from "../../assets/tech-industry.jpg";
 import techCommunity from "../../assets/tech-community.jpg";
-import {
-  Code2,
-  TrendingUp,
-  Sparkles,
-} from "lucide-react";
 
 const SLIDES = [
   {
@@ -22,10 +17,10 @@ const SLIDES = [
     Visual: CommunityVisual,
   },
   {
-    key: "share",
-    title: "Post your work,\nmemes & wins.",
-    body: "Drop a gist, a shipped feature, or the meme only devs will understand. Your feed, your voice.",
-    Visual: ShareVisual,
+    key: "discover",
+    title: "Discover what's\nnext in tech.",
+    body: "Explore ideas, projects, communities, and conversations from people building the future.",
+    Visual: DiscoverVisual,
   },
   {
     key: "ideas",
