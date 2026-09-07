@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight } from "lucide-react";
+import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight, MessageCircle, Send, UserPlus, Heart  } from "lucide-react";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 import femaleDesigner from "../../assets/Femaledesigner.png";
 import maleProgrammer from "../../assets/maleprogrammer.png";
@@ -22,12 +22,12 @@ const SLIDES = [
     body: "Explore ideas, projects, communities, and conversations from people building the future.",
     Visual: DiscoverVisual,
   },
-  {
-    key: "ideas",
-    title: "Turn ideas into\nreal ventures.",
-    body: "Find a co-founder, a collaborator, or just someone who won't laugh at your 2am startup idea.",
-    Visual: IdeasVisual,
-  },
+{
+  key: "connect",
+  title: "Build connections\nthat matter.",
+  body: "Meet developers, designers, and creators who share your interests. Connect, chat, collaborate, and build something together.",
+  Visual: ConnectVisual,
+},
 ];
 
 // Entrance animation for each element within a slide — staggers children
@@ -344,7 +344,7 @@ function CommunityVisual() {
     </div>
   );
 }
-// --- Slide 2: Share your work — a mini feed-post mockup ---
+
 // --- Slide 2: Discover Tech ---
 function DiscoverVisual() {
   return (
@@ -497,42 +497,254 @@ function DiscoverVisual() {
   );
 }
 // --- Slide 3: Business ideas — collaboration / pitch mockup ---
-function IdeasVisual() {
+function ConnectVisual() {
   return (
-    <>
-      <div className="absolute left-4 top-0 w-40 rounded-2xl border border-border bg-surface p-3 shadow-2xl">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-neutral-600 to-black text-white">
-            <Lightbulb size={14} />
+    <div className="relative mt-10 h-64 w-full overflow-hidden">
+      {/* Background glow */}
+      <motion.div
+        className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl"
+        animate={{
+          scale: [1, 1.15, 1],
+          opacity: [0.4, 0.7, 0.4],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      {/* Connection lines */}
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 400 260"
+        fill="none"
+        preserveAspectRatio="none"
+      >
+        <motion.path
+          d="M85 65 C145 65 150 125 200 130"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeDasharray="5 7"
+          className="text-violet-400/40"
+          animate={{ strokeDashoffset: [0, -24] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+
+        <motion.path
+          d="M315 70 C260 70 250 120 200 130"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeDasharray="5 7"
+          className="text-violet-400/40"
+          animate={{ strokeDashoffset: [0, -24] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+
+        <motion.path
+          d="M95 200 C145 200 155 150 200 130"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeDasharray="5 7"
+          className="text-violet-400/40"
+          animate={{ strokeDashoffset: [0, -24] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+
+        <motion.path
+          d="M305 200 C260 200 250 150 200 130"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeDasharray="5 7"
+          className="text-violet-400/40"
+          animate={{ strokeDashoffset: [0, -24] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+      </svg>
+
+      {/* Top-left profile */}
+      <motion.div
+        className="absolute left-4 top-5 flex items-center gap-2 rounded-2xl border border-white/10 bg-[#171720]/90 px-3 py-2 shadow-xl backdrop-blur-md"
+        initial={{ opacity: 0, x: -15 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-300">
+          JD
+        </div>
+
+        <div>
+          <p className="text-[10px] font-semibold text-white">Jordan</p>
+          <p className="text-[8px] text-white/40">Developer</p>
+        </div>
+      </motion.div>
+
+      {/* Top-right profile */}
+      <motion.div
+        className="absolute right-4 top-7 flex items-center gap-2 rounded-2xl border border-white/10 bg-[#171720]/90 px-3 py-2 shadow-xl backdrop-blur-md"
+        initial={{ opacity: 0, x: 15 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500/20 text-xs font-bold text-pink-300">
+          AM
+        </div>
+
+        <div>
+          <p className="text-[10px] font-semibold text-white">Avery</p>
+          <p className="text-[8px] text-white/40">Designer</p>
+        </div>
+      </motion.div>
+
+      {/* Bottom-left profile */}
+      <motion.div
+        className="absolute bottom-5 left-7 flex items-center gap-2 rounded-2xl border border-white/10 bg-[#171720]/90 px-3 py-2 shadow-xl backdrop-blur-md"
+        initial={{ opacity: 0, x: -15 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+      >
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500/20 text-xs font-bold text-cyan-300">
+          MK
+        </div>
+
+        <div>
+          <p className="text-[10px] font-semibold text-white">Mika</p>
+          <p className="text-[8px] text-white/40">Creator</p>
+        </div>
+      </motion.div>
+
+      {/* Bottom-right profile */}
+      <motion.div
+        className="absolute bottom-5 right-7 flex items-center gap-2 rounded-2xl border border-white/10 bg-[#171720]/90 px-3 py-2 shadow-xl backdrop-blur-md"
+        initial={{ opacity: 0, x: 15 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
+      >
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-300">
+          RS
+        </div>
+
+        <div>
+          <p className="text-[10px] font-semibold text-white">Riley</p>
+          <p className="text-[8px] text-white/40">Founder</p>
+        </div>
+      </motion.div>
+
+      {/* Central connection card */}
+      <motion.div
+        className="absolute left-1/2 top-1/2 z-10 w-36 -translate-x-1/2 -translate-y-1/2"
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{
+          scale: [0.95, 1, 0.95],
+          opacity: 1,
+        }}
+        transition={{
+          scale: {
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          },
+          opacity: {
+            duration: 0.5,
+          },
+        }}
+      >
+        <div className="rounded-2xl border border-violet-400/20 bg-[#181821]/95 p-3 shadow-2xl backdrop-blur-xl">
+          <div className="mb-2 flex items-center justify-between">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-500/15 text-violet-300">
+              <MessageCircle size={16} />
+            </div>
+
+            <motion.div
+              animate={{ rotate: [0, 8, -8, 0] }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+              }}
+            >
+              <Sparkles size={13} className="text-violet-300" />
+            </motion.div>
           </div>
-          <p className="text-xs font-semibold text-text-primary">Looking for a co-founder</p>
+
+          <p className="text-[11px] font-semibold text-white">
+            Let's build together
+          </p>
+
+          <p className="mt-1 text-[8px] leading-relaxed text-white/40">
+            Connect with people who share your ideas.
+          </p>
+
+          <motion.div
+            className="mt-3 flex items-center justify-between rounded-lg bg-violet-500/10 px-2 py-1.5"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+            }}
+          >
+            <span className="text-[8px] font-medium text-violet-300">
+              Connected
+            </span>
+
+            <div className="flex h-4 w-4 items-center justify-center rounded-full bg-violet-500/20">
+              <UserPlus size={9} className="text-violet-300" />
+            </div>
+          </motion.div>
         </div>
-        <p className="mt-2 text-[10px] leading-snug text-text-secondary">
-          Building a dev-tools startup. Need a frontend lead.
-        </p>
-      </div>
+      </motion.div>
 
-      <div
-        className="animate-float absolute right-0 top-16 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-neutral-500 to-neutral-900 text-white shadow-2xl"
-        style={{ animationDelay: "0.5s" }}
+      {/* Floating message bubble */}
+      <motion.div
+        className="absolute left-1/2 top-3 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-[#171720]/90 px-3 py-1.5 shadow-lg backdrop-blur-md"
+        animate={{
+          y: [0, -5, 0],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
       >
-        <TrendingUp size={22} />
-      </div>
+        <Send size={10} className="text-violet-300" />
+        <span className="text-[8px] font-medium text-white/70">
+          New connection
+        </span>
+      </motion.div>
 
-      <div className="absolute bottom-6 left-0 w-44 rounded-2xl bg-white p-3 text-black shadow-2xl">
-        <p className="text-[10px] font-semibold text-neutral-500">MATCHED</p>
-        <div className="mt-1 flex items-center gap-2">
-          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-neutral-400 to-neutral-700" />
-          <p className="text-xs font-semibold">You + jules.designs</p>
-        </div>
-      </div>
-
-      <div
-        className="animate-float absolute bottom-0 right-6 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-surface text-text-primary shadow-lg"
-        style={{ animationDelay: "1.4s" }}
+      {/* Small heart notification */}
+      <motion.div
+        className="absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-white/10 bg-[#171720]/90 px-3 py-1.5 shadow-lg backdrop-blur-md"
+        animate={{
+          y: [0, 5, 0],
+          opacity: [0.65, 1, 0.65],
+        }}
+        transition={{
+          duration: 3.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
       >
-        <Sparkles size={18} />
-      </div>
-    </>
+        <Heart size={9} className="fill-current text-pink-400" />
+        <span className="text-[8px] text-white/60">
+          Someone liked your work
+        </span>
+      </motion.div>
+    </div>
   );
 }
