@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight } from "lucide-react";
-import gridspaceLogo from "../../assets/gridspace-logo.png";
+import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 
 const SLIDES = [
   {
