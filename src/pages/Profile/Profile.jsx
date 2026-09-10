@@ -7,6 +7,7 @@ import EditProfileForm from "../../components/ProfileHeader/EditProfileForm";
 import { ArrowLeft, Settings } from "lucide-react";
 import { logOut } from "../../firebase/auth";
 import { usePosts } from "../../hooks/usePosts";
+import { useReposts } from "../../hooks/useReposts";
 import PostCard from "../../components/PostCard/PostCard";
 
 export default function Profile() {
@@ -20,6 +21,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState("posts");
 
   const { posts, loading: loadingPosts } = usePosts([profile?.id].filter(Boolean));
+  const { reposts, loading: loadingReposts } = useReposts(profile?.id);
 
   if (loading) {
     return <div className="p-6 text-text-secondary">Loading profile...</div>;
@@ -114,7 +116,19 @@ export default function Profile() {
           )}
 
           {activeTab === "reposts" && (
-            <div className="text-center text-sm text-text-secondary">Reposts will appear here in a future update.</div>
+            <div>
+              {loadingReposts ? (
+                <p className="text-center text-sm text-text-secondary">Loading reposts...</p>
+              ) : reposts.length === 0 ? (
+                <p className="text-center text-sm text-text-secondary">No reposts yet.</p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {reposts.map((repost) => (
+                    <PostCard key={repost.originalPostId} post={repost} />
+                  ))}
+                </div>
+              )}
+            </div>
           )}
 
           {activeTab === "saved" && (

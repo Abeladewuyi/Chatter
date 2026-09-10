@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { Heart, MessageCircle, Repeat2, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useLike } from "../../hooks/useLike";
 import { useFollow } from "../../hooks/useFollow";
@@ -28,7 +28,12 @@ export default function PostCard({ post, showComments = false }) {
   const { isLiked, toggleLike } = useLike(post.id, user.uid, post.authorId);
   const { isFollowing, toggleFollow } = useFollow(user.uid, post.authorId);
   const { isBookmarked, toggleBookmark } = useBookmark(post.id, user.uid);
-  const { isReposted, toggleRepost } = useRepost(["posts", post.id], user.uid, ["posts", post.id]);
+  const { isReposted, toggleRepost } = useRepost(
+    ["posts", post.id],
+    user.uid,
+    ["posts", post.id],
+    post
+  );
 
   return (
     // Card-free: no box/background, just a thin bottom border separating posts
@@ -102,7 +107,7 @@ export default function PostCard({ post, showComments = false }) {
             }`}
             aria-pressed={isReposted}
           >
-            <Repeat2 size={20} />
+            <Send size={20} />
             {post.repostsCount ?? 0}
           </button>
         </div>

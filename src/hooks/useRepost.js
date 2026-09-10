@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { deleteDoc, doc, increment, onSnapshot, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, increment, onSnapshot, serverTimestamp, writeBatch } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-export function useRepost(path, uid, countPath) {
+export function useRepost(path, uid, countPath, repostData = null) {
   const [isReposted, setIsReposted] = useState(false);
   const pathKey = path.join("/");
 
@@ -16,14 +16,28 @@ export function useRepost(path, uid, countPath) {
   async function toggleRepost() {
     const repostRef = doc(db, ...path, "reposts", uid);
     const targetRef = doc(db, ...countPath);
+    const batch = writeBatch(db);
+    const profileRepostRef = repostData?.id
+      ? doc(db, "users", uid, "reposts", repostData.id)
+      : null;
 
     if (isReposted) {
-      await deleteDoc(repostRef);
-      await updateDoc(targetRef, { repostsCount: increment(-1) });
+      batch.delete(repostRef);
+      batch.update(targetRef, { repostsCount: increment(-1) });
+      if (profileRepostRef) batch.delete(profileRepostRef);
     } else {
-      await setDoc(repostRef, { createdAt: serverTimestamp() });
-      await updateDoc(targetRef, { repostsCount: increment(1) });
+      batch.set(repostRef, { createdAt: serverTimestamp() });
+      batch.update(targetRef, { repostsCount: increment(1) });
+      if (profileRepostRef) {
+        batch.set(profileRepostRef, {
+          ...repostData,
+          originalPostId: repostData.id,
+          repostedAt: serverTimestamp(),
+        });
+      }
     }
+
+    await batch.commit();
   }
 
   return { isReposted, toggleRepost };

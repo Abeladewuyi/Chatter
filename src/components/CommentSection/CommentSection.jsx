@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import { Heart, MessageCircle, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
@@ -39,7 +39,7 @@ function CommentActions({ postId, comment, uid }) {
         className={`flex items-center gap-1 text-xs text-text-muted hover:text-accent ${isReposted ? "text-accent" : ""}`}
         aria-pressed={isReposted}
       >
-        <Repeat2 size={12} />
+        <Send size={12} />
         {comment.repostsCount ?? 0}
       </button>
     </div>
