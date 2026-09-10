@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800&display=swap");
 
 /*
   Custom design tokens, matching the dark/purple mockup Abel approved.
@@ -33,6 +34,12 @@
   --app-text-secondary: #b8b8c7;
   --app-text-muted: #9292a4;
 }
+
+:root {
+  font-family: "Satoshi", sans-serif;
+}
+
+
 html.light {
   --color-bg: #ffffff;
   --color-surface: #f5f5f5;
@@ -59,34 +66,18 @@ html.light {
   --app-text-muted: #747483;
 }
 
-:focus,
-:focus-visible {
-  outline: none;
-}
-
-button,
-input,
-textarea,
-select,
-a {
-  outline: none;
-}
-
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-a:focus-visible,
-[role="button"]:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.2);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
-}
-
 body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
   transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Keep page surfaces clean while preserving the existing layout dimensions. */
+*,
+*::before,
+*::after {
+  border-color: transparent !important;
+  outline: none !important;
 }
 
 .loading-screen {

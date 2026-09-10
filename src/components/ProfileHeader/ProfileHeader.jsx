@@ -72,7 +72,7 @@ export default function ProfileHeader({ profile, isOwnProfile, currentUid, onEdi
         <div className="mt-4">
           <button
             onClick={onEditClick}
-            className="w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-text-primary hover:border-accent"
+            className="w-full rounded-lg border border-border bg-surface-2 px-4 py-2.5 text-sm text-text-primary ring-1 ring-text-secondary hover:ring-text-primary"
           >
             Edit Profile
           </button>

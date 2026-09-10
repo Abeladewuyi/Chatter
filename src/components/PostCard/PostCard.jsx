@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { doc, deleteDoc, updateDoc, increment } from "firebase/firestore";
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from "lucide-react";
-import { db } from "../../firebase/config";
+import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useLike } from "../../hooks/useLike";
 import { useFollow } from "../../hooks/useFollow";
@@ -30,18 +28,10 @@ export default function PostCard({ post }) {
   const { isBookmarked, toggleBookmark } = useBookmark(post.id, user.uid);
   const [showComments, setShowComments] = useState(false);
 
-  const isOwnPost = post.authorId === user.uid;
-
-  async function handleDelete() {
-    if (!confirm("Delete this post?")) return;
-    await deleteDoc(doc(db, "posts", post.id));
-    await updateDoc(doc(db, "users", user.uid), { postsCount: increment(-1) });
-  }
-
   return (
     // Card-free: no box/background, just a thin bottom border separating posts
     <div className="border-b border-white/10 py-4">
-      <div className="flex items-start justify-between">
+      <div className="flex items-center justify-between gap-3">
         <Link to={`/profile/${post.authorId}`} className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-text-primary">
             {post.authorPhotoURL ? (
@@ -59,22 +49,19 @@ export default function PostCard({ post }) {
         </Link>
 
         <div className="flex items-center gap-2">
-          {!isOwnPost && (
+          {post.authorId !== user.uid && (
             <button
+              type="button"
               onClick={toggleFollow}
+              aria-pressed={isFollowing}
+              aria-label={`${isFollowing ? "Unfollow" : "Follow"} ${post.authorDisplayName}`}
               className={
                 isFollowing
-                  ? "rounded-full border border-border px-3 py-1 text-xs text-text-secondary hover:border-text-primary hover:text-text-primary"
-                  : "rounded-full bg-accent px-3 py-1 text-xs font-medium text-on-accent hover:bg-accent-hover"
+                  ? "whitespace-nowrap rounded-full px-3 py-1 text-xs text-text-secondary hover:text-text-primary"
+                  : "whitespace-nowrap rounded-full bg-accent px-3 py-1 text-xs font-medium text-on-accent hover:bg-accent-hover"
               }
             >
               {isFollowing ? "Following" : "Follow"}
-            </button>
-          )}
-
-          {isOwnPost && (
-            <button onClick={handleDelete} className="text-text-muted hover:text-red-400">
-              <MoreHorizontal size={18} />
             </button>
           )}
         </div>
@@ -94,7 +81,7 @@ export default function PostCard({ post }) {
               isLiked ? "text-text-primary" : ""
             }`}
           >
-            <Heart size={17} fill={isLiked ? "currentColor" : "none"} />
+            <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
             {post.likesCount ?? 0}
           </button>
 
@@ -102,12 +89,13 @@ export default function PostCard({ post }) {
             onClick={() => setShowComments((prev) => !prev)}
             className="flex items-center gap-1.5 text-sm hover:text-text-primary"
           >
-            <MessageCircle size={17} />
+            <MessageCircle size={20} />
             {post.commentsCount ?? 0}
           </button>
 
           <button className="flex items-center gap-1.5 text-sm hover:text-text-primary">
-            <Send size={17} />
+            <Send size={20} />
+            {post.sharesCount ?? 0}
           </button>
         </div>
 

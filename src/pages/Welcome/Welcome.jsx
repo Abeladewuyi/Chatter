@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight, MessageCircle, Send, UserPlus, Heart  } from "lucide-react";
+import { Code2, Palette, Sparkles, Users, Lightbulb, TrendingUp, ChevronRight, MessageCircle, Send, UserPlus, Heart, Search  } from "lucide-react";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 import femaleDesigner from "../../assets/Femaledesigner.png";
 import maleProgrammer from "../../assets/maleprogrammer.png";
@@ -177,7 +177,10 @@ export default function Welcome() {
 // --- Slide 1: Community — programmer + designer ---
 function CommunityVisual() {
   return (
-    <div className="relative h-full w-full">
+<div
+  className="relative h-full w-full"
+  style={{ fontFamily: '"Satoshi", "Inter", sans-serif' }}
+>
 
       {/* Soft background glow */}
       <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-3xl" />
@@ -352,7 +355,10 @@ function CommunityVisual() {
 // --- Slide 2: Discover Tech ---
 function DiscoverVisual() {
   return (
-    <div className="relative h-full w-full">
+<div
+  className="relative h-full w-full"
+  style={{ fontFamily: '"Satoshi", "Inter", sans-serif' }}
+>
 
       {/* Background glow */}
       <div className="absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/15 blur-3xl" />
@@ -491,7 +497,7 @@ function DiscoverVisual() {
         transition={{ duration: 0.5, delay: 0.7 }}
         className="absolute right-4 top-0 z-30 flex items-center gap-1.5 rounded-full border border-white/15 bg-accent px-3 py-1.5 shadow-lg shadow-accent/20"
       >
-        <Sparkles size={10} className="text-on-accent" />
+        <Search size={10} className="text-on-accent" />
         <span className="text-[8px] font-bold text-on-accent">
           EXPLORE
         </span>
@@ -503,7 +509,10 @@ function DiscoverVisual() {
 // --- Slide 3: Business ideas — collaboration / pitch mockup ---
 function ConnectVisual() {
   return (
-    <div className="relative mt-10 h-64 w-full overflow-hidden">
+   <div
+  className="relative mt-10 h-64 w-full overflow-hidden"
+  style={{ fontFamily: '"Satoshi", "Inter", sans-serif' }}
+>
       {/* Background glow */}
       <motion.div
         className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-3xl"
@@ -683,19 +692,12 @@ function ConnectVisual() {
               <MessageCircle size={16} />
             </div>
 
-            <motion.div
-              animate={{ rotate: [0, 8, -8, 0] }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-              }}
-            >
-              <Sparkles size={13} className="text-violet-300" />
-            </motion.div>
+
           </div>
 
-          <p className="text-[11px] font-semibold text-white">
-            Let's build together
+          <p
+          className="text-[11px] font-semibold tracking-[-0.01em] text-white"
+          > Let's build together 
           </p>
 
           <p className="mt-1 text-[8px] leading-relaxed text-white/40">
@@ -710,8 +712,10 @@ function ConnectVisual() {
               repeat: Infinity,
             }}
           >
-            <span className="text-[8px] font-medium text-violet-300">
-              Connected
+            <span
+            className= "text-[8px] font-medium tracking-[0.01em] text-violet-300"
+            >
+            Connected
             </span>
 
             <div className="flex h-4 w-4 items-center justify-center rounded-full bg-violet-500/20">
@@ -733,7 +737,7 @@ function ConnectVisual() {
           ease: "easeInOut",
         }}
       >
-        <Send size={10} className="text-violet-300" />
+        <UserPlus size={10} className="text-violet-300" />
         <span className="text-[8px] font-medium text-white/70">
           New connection
         </span>
@@ -754,7 +758,7 @@ function ConnectVisual() {
       >
         <Heart size={9} className="fill-current text-pink-400" />
         <span className="text-[8px] text-white/60">
-          Someone liked your work
+          Spectra liked your design
         </span>
       </motion.div>
     </div>

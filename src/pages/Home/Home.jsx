@@ -121,7 +121,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <div className="mb-4 flex items-center justify-start">
+          <div className="sticky top-0 z-20 mb-4 flex items-center justify-start bg-bg py-3">
             <div className="relative">
               <select
                 value={feedFilter}
