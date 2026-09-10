@@ -19,6 +19,7 @@ import Privacy from "./pages/Privacy/Privacy";
 import Help from "./pages/Help/Help";
 import Report from "./pages/Report/Report";
 import Welcome from "./pages/Welcome/Welcome";
+import Post from "./pages/Post/Post";
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/post/:postId"
+              element={
+                <ProtectedRoute>
+                  <Post />
                 </ProtectedRoute>
               }
             />

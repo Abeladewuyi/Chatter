@@ -1,10 +1,11 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Heart, MessageCircle, Repeat2, Bookmark } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useLike } from "../../hooks/useLike";
 import { useFollow } from "../../hooks/useFollow";
 import { useBookmark } from "../../hooks/useBookmark";
+import { useRepost } from "../../hooks/useRepost";
 import CommentSection from "../CommentSection/CommentSection";
 
 function formatTimestamp(timestamp) {
@@ -21,12 +22,13 @@ function formatTimestamp(timestamp) {
   return `${diffDays}d`;
 }
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, showComments = false }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { isLiked, toggleLike } = useLike(post.id, user.uid, post.authorId);
   const { isFollowing, toggleFollow } = useFollow(user.uid, post.authorId);
   const { isBookmarked, toggleBookmark } = useBookmark(post.id, user.uid);
-  const [showComments, setShowComments] = useState(false);
+  const { isReposted, toggleRepost } = useRepost(["posts", post.id], user.uid, ["posts", post.id]);
 
   return (
     // Card-free: no box/background, just a thin bottom border separating posts
@@ -86,16 +88,22 @@ export default function PostCard({ post }) {
           </button>
 
           <button
-            onClick={() => setShowComments((prev) => !prev)}
+            onClick={() => navigate(`/post/${post.id}`)}
             className="flex items-center gap-1.5 text-sm hover:text-text-primary"
           >
             <MessageCircle size={20} />
             {post.commentsCount ?? 0}
           </button>
 
-          <button className="flex items-center gap-1.5 text-sm hover:text-text-primary">
-            <Send size={20} />
-            {post.sharesCount ?? 0}
+          <button
+            onClick={toggleRepost}
+            className={`flex items-center gap-1.5 text-sm hover:text-text-primary ${
+              isReposted ? "text-accent" : ""
+            }`}
+            aria-pressed={isReposted}
+          >
+            <Repeat2 size={20} />
+            {post.repostsCount ?? 0}
           </button>
         </div>
 

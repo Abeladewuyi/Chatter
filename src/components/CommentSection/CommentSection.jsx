@@ -1,28 +1,54 @@
 import { useEffect, useRef, useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useComments } from "../../hooks/useComments";
 import { useCommentLike } from "../../hooks/useCommentLike";
+import { useRepost } from "../../hooks/useRepost";
 
-function CommentLikeButton({ postId, commentId, uid, commentAuthorId, likesCount }) {
-  const { isLiked, toggleLike } = useCommentLike(postId, commentId, uid, commentAuthorId);
+function CommentActions({ postId, comment, uid }) {
+  const { isLiked, toggleLike } = useCommentLike(postId, comment.id, uid, comment.authorId);
+  const { isReposted, toggleRepost } = useRepost(
+    ["posts", postId, "comments", comment.id],
+    uid,
+    ["posts", postId, "comments", comment.id]
+  );
+  const navigate = useNavigate();
 
   return (
-    <button
-      onClick={toggleLike}
-      className={`flex items-center gap-1 text-xs hover:text-accent ${
-        isLiked ? "text-accent" : "text-text-muted"
-      }`}
-    >
-      <Heart size={12} fill={isLiked ? "currentColor" : "none"} />
-      {likesCount > 0 && likesCount}
-    </button>
+    <div className="flex items-center gap-3">
+      <button
+        onClick={toggleLike}
+        className={`flex items-center gap-1 text-xs hover:text-accent ${
+          isLiked ? "text-accent" : "text-text-muted"
+        }`}
+      >
+        <Heart size={12} fill={isLiked ? "currentColor" : "none"} />
+        {comment.likesCount ?? 0}
+      </button>
+      <button
+        onClick={() => navigate(`/post/${postId}`)}
+        className="flex items-center gap-1 text-xs text-text-muted hover:text-accent"
+        aria-label="Reply to comment"
+      >
+        <MessageCircle size={12} />
+      </button>
+      <button
+        onClick={toggleRepost}
+        className={`flex items-center gap-1 text-xs text-text-muted hover:text-accent ${isReposted ? "text-accent" : ""}`}
+        aria-pressed={isReposted}
+      >
+        <Repeat2 size={12} />
+        {comment.repostsCount ?? 0}
+      </button>
+    </div>
   );
 }
 
 export default function CommentSection({ postId, postAuthorId, autoFocus = false }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { profile } = useUserProfile(user.uid);
   const { comments, loading, addComment, deleteComment } = useComments(postId, postAuthorId);
   const [text, setText] = useState("");
@@ -66,7 +92,11 @@ export default function CommentSection({ postId, postAuthorId, autoFocus = false
       ) : (
         <div className="flex flex-col gap-3">
           {comments.map((comment) => (
-            <div key={comment.id} className="flex items-start justify-between gap-2">
+            <div
+              key={comment.id}
+              className="flex cursor-pointer items-start justify-between gap-2"
+              onClick={() => navigate(`/post/${postId}`)}
+            >
               <div className="flex gap-2">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-xs font-semibold text-accent">
                   {comment.authorPhotoURL ? (
@@ -81,13 +111,13 @@ export default function CommentSection({ postId, postAuthorId, autoFocus = false
                   </span>{" "}
                   <span className="text-sm text-text-primary">{comment.text}</span>
                   <div className="mt-1">
-                    <CommentLikeButton
+                    <div onClick={(event) => event.stopPropagation()}>
+                      <CommentActions
                       postId={postId}
-                      commentId={comment.id}
+                      comment={comment}
                       uid={user.uid}
-                      commentAuthorId={comment.authorId}
-                      likesCount={comment.likesCount ?? 0}
-                    />
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
