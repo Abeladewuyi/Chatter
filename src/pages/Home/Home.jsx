@@ -29,12 +29,13 @@ export default function Home() {
 
   const { profile } = useUserProfile(uid);
   const { followingIds, loading: loadingFollowing } = useFollowingIds(uid);
-  const authorIds = uid ? [...new Set([uid, ...followingIds])] : [];
+  const [feedFilter, setFeedFilter] = useState("For you");
+  const followingOnly = feedFilter === "Following";
+  const authorIds = followingOnly ? followingIds : null;
   const { posts, loading: loadingPosts, error } = usePosts(authorIds);
   const loading = loadingFollowing || loadingPosts;
   const { unreadCount } = useNotifications(uid);
   const { unreadMessageCount } = useUnreadMessageCount(uid);
-  const [feedFilter, setFeedFilter] = useState("For you");
 
   const displayName = profile?.displayName || "You";
   const username = profile?.username || "";

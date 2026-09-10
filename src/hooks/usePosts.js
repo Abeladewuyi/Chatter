@@ -14,20 +14,23 @@ export function usePosts(authorIds) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authorIds || authorIds.length === 0) {
+    if (Array.isArray(authorIds) && authorIds.length === 0) {
       setPosts([]);
       setLoading(false);
       return;
     }
 
-    const cappedIds = authorIds.slice(0, 10);
+    const postsCollection = collection(db, "posts");
+    const cappedIds = authorIds?.slice(0, 10);
 
-    const postsQuery = query(
-      collection(db, "posts"),
-      where("authorId", "in", cappedIds),
-      orderBy("createdAt", "desc"),
-      limit(50)
-    );
+    const postsQuery = cappedIds
+      ? query(
+          postsCollection,
+          where("authorId", "in", cappedIds),
+          orderBy("createdAt", "desc"),
+          limit(50)
+        )
+      : query(postsCollection, orderBy("createdAt", "desc"), limit(50));
 
     const unsubscribe = onSnapshot(
       postsQuery,
