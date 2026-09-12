@@ -1,20 +1,35 @@
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase/config";
+const WORKER_URL = import.meta.env.VITE_UPLOAD_WORKER_URL;
 
 /**
- * Uploads a file to Firebase Storage at the given path, then returns the
- * public download URL for it. Kept generic (not "uploadProfilePicture"
- * specifically) so it can be reused later for post images and message images.
+ * Uploads a file to our Cloudflare Worker, which verifies the person is
+ * really logged in (via their Firebase ID token) before writing the file
+ * into R2. Returns the public URL of the uploaded file.
  */
-export async function uploadImage(file, path) {
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  return url;
+export async function uploadImageToWorker(file, folder, idToken) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder); // e.g. "profile-pictures" or "post-images"
+
+  const response = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${idToken}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || "Upload failed");
+  }
+
+  const data = await response.json();
+  return data.url;
 }
 
 /**
- * Basic client-side validation before we even attempt an upload.
+ * Basic client-side validation before we even attempt an upload —
+ * catches obviously-wrong files early instead of letting the Worker reject them.
  */
 export function validateImageFile(file, maxSizeMB = 5) {
   if (!file.type.startsWith("image/")) {
