@@ -7,6 +7,7 @@ import { useFollow } from "../../hooks/useFollow";
 import { useBookmark } from "../../hooks/useBookmark";
 import { useRepost } from "../../hooks/useRepost";
 import CommentSection from "../CommentSection/CommentSection";
+import PollDisplay from "../PollDisplay/PollDisplay";
 
 function formatTimestamp(timestamp) {
   if (!timestamp) return "Just now";
@@ -79,6 +80,7 @@ export default function PostCard({ post, showComments = false }) {
       )}
 
       <p className="mt-3 whitespace-pre-wrap text-sm text-text-primary">{post.text}</p>
+      {post.poll && <PollDisplay postId={post.id} poll={post.poll} />}
 
       <div className="mt-4 flex items-center justify-between text-text-secondary">
         <div className="flex items-center gap-6">

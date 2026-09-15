@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import MobileNav from "./MobileNav/MobileNav";
+import SplashScreen from "./SplashScreen/SplashScreen";
 
 /**
  * Wrap any page element with this to require login:
@@ -15,7 +15,6 @@ import MobileNav from "./MobileNav/MobileNav";
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const [typedText, setTypedText] = useState("");
 
   const hideBottomNav =
     location.pathname === "/create-post" ||
@@ -23,40 +22,12 @@ export default function ProtectedRoute({ children }) {
     location.pathname.startsWith("/profile") ||
     location.pathname.startsWith("/messages");
 
-  useEffect(() => {
-    if (!loading) return;
-
-    const fullText = "Gridspace";
-    let index = 0;
-
-    const timer = setInterval(() => {
-      index += 1;
-      setTypedText(fullText.slice(0, index));
-
-      if (index >= fullText.length) {
-        setTimeout(() => {
-          setTypedText("");
-          index = 0;
-        }, 550);
-      }
-    }, 180);
-
-    return () => clearInterval(timer);
-  }, [loading]);
-
   if (loading) {
-    return (
-      <div className="loading-screen">
-        <div className="typing-logo-wrap" aria-live="polite" aria-label="Loading Gridspace">
-          <span className="typing-logo-text">{typedText}</span>
-          <span className="typing-cursor" aria-hidden="true" />
-        </div>
-      </div>
-    );
+    return <SplashScreen />;
   }
 
   if (!user) {
-    return <Navigate to="/Welcome" replace />;
+    return <Navigate to="/welcome" replace />;
   }
 
   return (
