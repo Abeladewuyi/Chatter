@@ -65,8 +65,8 @@ export default function PostCard({ post, showComments = false }) {
               aria-label={`${isFollowing ? "Unfollow" : "Follow"} ${post.authorDisplayName}`}
               className={
                 isFollowing
-                  ? "whitespace-nowrap rounded-full px-3 py-1 text-xs text-text-secondary hover:text-text-primary"
-                  : "whitespace-nowrap rounded-full bg-accent px-3 py-1 text-xs font-medium text-on-accent hover:bg-accent-hover"
+                  ? "whitespace-nowrap rounded-full bg-black px-3 py-1 text-xs font-medium text-white transition hover:bg-neutral-900"
+                  : "whitespace-nowrap rounded-full border border-white/15 bg-white px-3 py-1 text-xs font-medium text-black transition hover:bg-gray-200"
               }
             >
               {isFollowing ? "Following" : "Follow"}
@@ -90,7 +90,7 @@ export default function PostCard({ post, showComments = false }) {
               isLiked ? "text-text-primary" : ""
             }`}
           >
-            <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
+            <Heart size={25} fill={isLiked ? "currentColor" : "none"} />
             {post.likesCount ?? 0}
           </button>
 
@@ -98,7 +98,7 @@ export default function PostCard({ post, showComments = false }) {
             onClick={() => navigate(`/post/${post.id}`)}
             className="flex items-center gap-1.5 text-sm hover:text-text-primary"
           >
-            <MessageCircle size={20} />
+            <MessageCircle size={25} />
             {post.commentsCount ?? 0}
           </button>
 
@@ -109,7 +109,7 @@ export default function PostCard({ post, showComments = false }) {
             }`}
             aria-pressed={isReposted}
           >
-            <Send size={20} />
+            <Send size={25} />
             {post.repostsCount ?? 0}
           </button>
         </div>
@@ -118,7 +118,7 @@ export default function PostCard({ post, showComments = false }) {
           onClick={toggleBookmark}
           className={`hover:text-text-primary ${isBookmarked ? "text-text-primary" : ""}`}
         >
-          <Bookmark size={17} fill={isBookmarked ? "currentColor" : "none"} />
+          <Bookmark size={27} fill={isBookmarked ? "currentColor" : "none"} />
         </button>
       </div>
 

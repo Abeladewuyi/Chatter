@@ -21,7 +21,11 @@ export async function uploadImageToWorker(file, folder, idToken) {
 if (!response.ok) {
   const errorData = await response.json().catch(() => ({}));
   console.error("Upload error details:", errorData);
-  throw new Error(errorData.error || "Upload failed");
+throw new Error(
+  errorData?.debug?.error?.message ||
+  errorData.error ||
+  "Upload failed"
+);
 }
 
   const data = await response.json();

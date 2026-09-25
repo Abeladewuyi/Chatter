@@ -31,8 +31,8 @@ export default function ProfileHeader({ profile, isOwnProfile, currentUid, onEdi
               onClick={toggleFollow}
               className={
                 isFollowing
-                  ? "rounded-lg border border-border px-4 py-2 text-sm text-text-secondary hover:border-red-400 hover:text-red-400"
-                  : "rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-hover"
+                  ? "rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-900"
+                  : "rounded-lg border border-white/15 bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-gray-200"
               }
             >
               {isFollowing ? "Following" : "Follow"}

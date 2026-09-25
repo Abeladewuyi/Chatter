@@ -29,8 +29,8 @@ export default function UserCard({ profile }) {
           onClick={toggleFollow}
           className={
             isFollowing
-              ? "rounded-lg border border-border px-3 py-1.5 text-xs text-text-secondary hover:border-red-400 hover:text-red-400"
-              : "rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-accent-hover"
+              ? "rounded-lg bg-black px-3 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-900"
+              : "rounded-lg border border-white/15 bg-white px-3 py-1.5 text-xs font-medium text-black transition hover:bg-gray-200"
           }
         >
           {isFollowing ? "Following" : "Follow"}

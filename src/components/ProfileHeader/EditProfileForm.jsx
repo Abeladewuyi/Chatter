@@ -54,7 +54,7 @@ export default function EditProfileForm({ uid, profile, onDone }) {
       let photoURL = profile.photoURL || "";
 
       if (imageFile) {
-        const idToken = await user.getIdToken();
+        const idToken = await user.getIdToken(true);
 
         photoURL = await uploadImageToWorker(
           imageFile,
@@ -73,7 +73,7 @@ export default function EditProfileForm({ uid, profile, onDone }) {
       onDone();
     } catch (error) {
       console.error(error);
-      setError("Couldn't save your profile. Please try again.");
+setError(error.message || "Couldn't save your profile. Please try again.");
     } finally {
       setSaving(false);
     }
