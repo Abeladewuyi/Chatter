@@ -1,54 +1,95 @@
 import { useEffect, useRef, useState } from "react";
 import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
-import { Send, ArrowLeft, PlusSquare, Search as SearchIcon, MoreVertical, Phone } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  CheckCheck,
+  MoreVertical,
+  Phone,
+  PlusSquare,
+  Send,
+  Search as SearchIcon,
+} from "lucide-react";
+
 import { useAuth } from "../../context/AuthContext";
 import { db } from "../../firebase/config";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useConversations } from "../../hooks/useConversations";
 import { useMessages } from "../../hooks/useMessages";
-import { ensureConversation, sendMessage } from "../../firebase/messages";
+import {
+  ensureConversation,
+  sendMessage,
+} from "../../firebase/messages";
 
 async function markConversationAsRead(conversationId, myUid) {
   if (!conversationId) return;
 
-  const messagesSnap = await getDocs(collection(db, "conversations", conversationId, "messages"));
-  const unreadIncomingMessages = messagesSnap.docs.filter((messageDoc) => {
-    const message = messageDoc.data();
-    return message.senderId !== myUid && message.read !== true;
-  });
+  const messagesSnapshot = await getDocs(
+    collection(db, "conversations", conversationId, "messages")
+  );
+
+  const unreadIncomingMessages = messagesSnapshot.docs.filter(
+    (messageDocument) => {
+      const message = messageDocument.data();
+
+      return message.senderId !== myUid && message.read !== true;
+    }
+  );
 
   if (unreadIncomingMessages.length === 0) return;
 
   await Promise.all(
-    unreadIncomingMessages.map((messageDoc) =>
-      updateDoc(doc(db, "conversations", conversationId, "messages", messageDoc.id), { read: true })
+    unreadIncomingMessages.map((messageDocument) =>
+      updateDoc(
+        doc(
+          db,
+          "conversations",
+          conversationId,
+          "messages",
+          messageDocument.id
+        ),
+        {
+          delivered: true,
+          read: true,
+        }
+      )
     )
   );
 }
 
-/**
- * "Mark as unread" doesn't need to flip every message back to unread —
- * that's not how any messaging app actually works. Flipping just the most
- * recent incoming message is enough to make the conversation show up as
- * unread again (matches Gmail/WhatsApp-style "mark as unread" behavior).
- */
-async function markConversationAsUnread(conversationId, messages, myUid) {
-  const incoming = messages.filter((m) => m.senderId !== myUid);
-  if (incoming.length === 0) return;
+async function markConversationAsUnread(
+  conversationId,
+  messages,
+  myUid
+) {
+  const incomingMessages = messages.filter(
+    (message) => message.senderId !== myUid
+  );
 
-  const mostRecent = incoming[incoming.length - 1];
+  if (incomingMessages.length === 0) return;
+
+  const mostRecentMessage =
+    incomingMessages[incomingMessages.length - 1];
+
   await updateDoc(
-    doc(db, "conversations", conversationId, "messages", mostRecent.id),
-    { read: false }
+    doc(
+      db,
+      "conversations",
+      conversationId,
+      "messages",
+      mostRecentMessage.id
+    ),
+    {
+      read: false,
+    }
   );
 }
 
-// Small numeric badge showing exactly how many unread messages are in this
-// conversation — a plain dot only says "something's unread," this says how much.
 function UnreadCountBadge({ count }) {
   if (count === 0) return null;
+
   return (
     <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 text-[11px] font-semibold text-on-accent">
       {count > 9 ? "9+" : count}
@@ -57,90 +98,159 @@ function UnreadCountBadge({ count }) {
 }
 
 function ConversationRow({ conversation, myUid, searchQuery }) {
-  const otherUid = conversation.participants.find((id) => id !== myUid);
+  const otherUid = conversation.participants.find(
+    (id) => id !== myUid
+  );
+
   const { profile } = useUserProfile(otherUid);
   const { messages } = useMessages(conversation.id);
+
   const unreadMessages = messages.filter(
-    (message) => message.senderId !== myUid && message.read !== true
+    (message) =>
+      message.senderId !== myUid && message.read !== true
   );
+
   const hasUnreadMessages = unreadMessages.length > 0;
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close the menu if you click anywhere else on the page.
+  useEffect(() => {
+    const incomingUndeliveredMessages = messages.filter(
+      (message) =>
+        message.senderId !== myUid && message.delivered !== true
+    );
+
+    if (incomingUndeliveredMessages.length === 0) return;
+
+    Promise.all(
+      incomingUndeliveredMessages.map((message) =>
+        updateDoc(
+          doc(
+            db,
+            "conversations",
+            conversation.id,
+            "messages",
+            message.id
+          ),
+          {
+            delivered: true,
+          }
+        )
+      )
+    ).catch((error) => {
+      console.error("Could not mark message as delivered:", error);
+    });
+  }, [conversation.id, messages, myUid]);
+
   useEffect(() => {
     if (!menuOpen) return;
-    function handleClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
+
+    function handleClickOutside(event) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
         setMenuOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [menuOpen]);
 
   if (!profile) return null;
 
   if (searchQuery) {
-    const q = searchQuery.toLowerCase();
+    const searchText = searchQuery.toLowerCase();
     const name = (profile.displayName || "").toLowerCase();
-    const last = (conversation.lastMessage || "").toLowerCase();
-    if (!name.includes(q) && !last.includes(q)) return null;
+    const lastMessage = (
+      conversation.lastMessage || ""
+    ).toLowerCase();
+
+    if (
+      !name.includes(searchText) &&
+      !lastMessage.includes(searchText)
+    ) {
+      return null;
+    }
   }
 
   async function handleToggleReadStatus() {
     setMenuOpen(false);
+
     if (hasUnreadMessages) {
       await markConversationAsRead(conversation.id, myUid);
     } else {
-      await markConversationAsUnread(conversation.id, messages, myUid);
+      await markConversationAsUnread(
+        conversation.id,
+        messages,
+        myUid
+      );
     }
   }
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl py-5 px-3 transition-colors hover:bg-accent/5 ${
+      className={`flex items-center gap-3 rounded-xl px-3 py-5 transition-colors hover:bg-accent/5 ${
         hasUnreadMessages ? "bg-accent/5" : "bg-transparent"
       }`}
     >
       <Link
         to={`/messages/${otherUid}`}
-        onClick={() => markConversationAsRead(conversation.id, myUid)}
+        onClick={() =>
+          markConversationAsRead(conversation.id, myUid)
+        }
         className="flex min-w-0 flex-1 items-center gap-4"
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent ring-1 ring-white">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
           {profile.photoURL ? (
-            <img src={profile.photoURL} alt="" className="h-full w-full object-cover" />
+            <img
+              src={profile.photoURL}
+              alt=""
+              className="h-full w-full object-cover"
+            />
           ) : (
             profile.displayName?.charAt(0).toUpperCase() || "?"
           )}
         </div>
+
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-lg font-medium text-text-primary">{profile.displayName}</p>
+              <p className="text-lg font-medium text-text-primary">
+                {profile.displayName}
+              </p>
+
               <p
                 className={`truncate text-sm ${
-                  hasUnreadMessages ? "font-medium text-text-primary" : "text-text-muted"
+                  hasUnreadMessages
+                    ? "font-medium text-text-primary"
+                    : "text-text-muted"
                 }`}
               >
                 {conversation.lastMessage || "Say hello!"}
               </p>
             </div>
-            <div className="shrink-0 pl-2">
-              <p className="text-xs text-text-muted">{formatRelativeTimestamp(conversation.lastMessageAt)}</p>
-            </div>
+
+            <p className="shrink-0 pl-2 text-xs text-text-muted">
+              {formatRelativeTimestamp(
+                conversation.lastMessageAt
+              )}
+            </p>
           </div>
         </div>
       </Link>
 
-      {/* Now shows the actual unread count, not just a plain dot */}
       <UnreadCountBadge count={unreadMessages.length} />
 
-      <div className="relative shrink-0" ref={menuRef}>
+      <div ref={menuRef} className="relative shrink-0">
         <button
-          onClick={() => setMenuOpen((prev) => !prev)}
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
           className="p-2 text-text-muted hover:text-text-primary"
           aria-label="Conversation options"
         >
@@ -150,10 +260,13 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
         {menuOpen && (
           <div className="absolute right-0 top-full z-20 mt-1 w-44 overflow-hidden rounded-lg border border-border bg-surface shadow-lg">
             <button
+              type="button"
               onClick={handleToggleReadStatus}
               className="block w-full px-4 py-2.5 text-left text-sm text-text-primary hover:bg-surface-2"
             >
-              {hasUnreadMessages ? "Mark as read" : "Mark as unread"}
+              {hasUnreadMessages
+                ? "Mark as read"
+                : "Mark as unread"}
             </button>
           </div>
         )}
@@ -164,38 +277,61 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
 
 function formatRelativeTimestamp(timestamp) {
   if (!timestamp) return "";
-  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-  const diffMs = Date.now() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return "now";
-  if (diffMins < 60) return `${diffMins}m`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h`;
-  const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d`;
-  const diffWeeks = Math.floor(diffDays / 7);
-  if (diffWeeks < 52) return `${diffWeeks}w`;
-  const diffYears = Math.floor(diffWeeks / 52);
-  return `${diffYears}y`;
+
+  const date = timestamp.toDate
+    ? timestamp.toDate()
+    : new Date(timestamp);
+
+  const difference = Date.now() - date.getTime();
+  const minutes = Math.floor(difference / 60000);
+
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes}m`;
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) return `${hours}h`;
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 7) return `${days}d`;
+
+  const weeks = Math.floor(days / 7);
+
+  if (weeks < 52) return `${weeks}w`;
+
+  return `${Math.floor(weeks / 52)}y`;
 }
 
 function ConversationList({ myUid, searchQuery }) {
   const { conversations, loading } = useConversations(myUid);
 
-  if (loading) return <p className="text-sm text-text-secondary">Loading conversations...</p>;
+  if (loading) {
+    return (
+      <p className="text-sm text-text-secondary">
+        Loading conversations...
+      </p>
+    );
+  }
 
   if (conversations.length === 0) {
     return (
       <div className="rounded-2xl border border-border bg-surface p-8 text-center text-text-secondary">
-        No conversations yet. Visit someone's profile and hit Message to start one.
+        No conversations yet. Visit someone’s profile and tap
+        Message to start one.
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-2">
-      {conversations.map((c) => (
-        <ConversationRow key={c.id} conversation={c} myUid={myUid} searchQuery={searchQuery} />
+      {conversations.map((conversation) => (
+        <ConversationRow
+          key={conversation.id}
+          conversation={conversation}
+          myUid={myUid}
+          searchQuery={searchQuery}
+        />
       ))}
     </div>
   );
@@ -203,42 +339,48 @@ function ConversationList({ myUid, searchQuery }) {
 
 function formatTime(timestamp) {
   if (!timestamp) return "";
-  return timestamp.toDate().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  return timestamp.toDate().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-function getPresenceLabel(profile) {
-  if (!profile) return "offline";
-
-  if (profile.online === true) return "online";
-
-  if (profile.lastSeen) {
-    const lastSeen = profile.lastSeen?.toDate ? profile.lastSeen.toDate() : new Date(profile.lastSeen);
-    const diffMinutes = Math.max(0, Math.floor((Date.now() - lastSeen.getTime()) / 60000));
-
-    if (diffMinutes === 0) return "online";
-    if (diffMinutes < 60) return `last seen ${diffMinutes} min`;
-
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) return `last seen ${diffHours}h`;
-
-    const diffDays = Math.floor(diffHours / 24);
-    return `last seen ${diffDays}d`;
+function MessageStatus({ message }) {
+  if (!message.delivered) {
+    return <Check size={15} className="text-white/80" />;
   }
 
-  return "offline";
+  return (
+    <CheckCheck
+      size={16}
+      className={
+        message.read ? "text-sky-400" : "text-white/90"
+      }
+    />
+  );
 }
 
 function ChatWindow({ myUid, otherUid }) {
+  const navigate = useNavigate();
   const { profile: otherProfile } = useUserProfile(otherUid);
+
   const [conversationId, setConversationId] = useState(null);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
+
     ensureConversation(myUid, otherUid).then((id) => {
-      if (!cancelled) setConversationId(id);
+      if (!cancelled) {
+        setConversationId(id);
+      }
     });
+
     return () => {
       cancelled = true;
     };
@@ -247,146 +389,293 @@ function ChatWindow({ myUid, otherUid }) {
   const { messages, loading } = useMessages(conversationId);
 
   useEffect(() => {
-    if (!conversationId || !messages.length) return;
+    if (!conversationId || messages.length === 0) return;
 
     const unreadIncomingMessages = messages.filter(
-      (message) => message.senderId !== myUid && message.read !== true
+      (message) =>
+        message.senderId !== myUid && message.read !== true
     );
 
     if (unreadIncomingMessages.length === 0) return;
 
     Promise.all(
       unreadIncomingMessages.map((message) =>
-        updateDoc(doc(db, "conversations", conversationId, "messages", message.id), { read: true })
+        updateDoc(
+          doc(
+            db,
+            "conversations",
+            conversationId,
+            "messages",
+            message.id
+          ),
+          {
+            delivered: true,
+            read: true,
+          }
+        )
       )
-    ).catch((err) => console.error("Failed to mark messages as read:", err));
+    ).catch((error) => {
+      console.error("Could not mark messages as read:", error);
+    });
   }, [conversationId, messages, myUid]);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function handleClickOutside(event) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
     if (!text.trim() || !conversationId) return;
 
     setSending(true);
+
     try {
       await sendMessage(conversationId, myUid, otherUid, text.trim());
       setText("");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     } finally {
       setSending(false);
     }
   }
 
-  function handleBack() {
-    if (window.history.length > 1) {
-      window.history.back();
-      return;
+  function handleBlock() {
+    setMenuOpen(false);
+
+    if (
+      window.confirm(
+        `Block ${otherProfile?.displayName || "this user"}?`
+      )
+    ) {
+      alert("Block action will be connected to Firestore next.");
     }
-    window.location.href = "/";
   }
 
+  function handleReport() {
+    setMenuOpen(false);
+
+    if (
+      window.confirm(
+        `Report ${otherProfile?.displayName || "this user"}?`
+      )
+    ) {
+      alert("Report submitted.");
+    }
+  }
+
+  const displayName =
+    otherProfile?.displayName || "Chatter member";
+
+  const jobTitle = otherProfile?.jobTitle?.trim();
+
+  const initial = displayName.charAt(0).toUpperCase();
+
+  const canSend = text.trim().length > 0 && !sending;
+
   return (
-    <div className="flex h-[calc(100vh-3rem)] flex-col bg-black">
-      <div className="sticky top-0 z-10 flex w-full items-center justify-between gap-3 border-b border-black bg-black pb-3 pt-2">
-        <div className="flex items-center gap-3">
+    <div className="flex min-h-screen flex-col bg-bg pb-20 lg:pb-0">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            onClick={handleBack}
-            className="ml-0 text-white/80 hover:text-white"
-            aria-label="Go back"
+            onClick={() => navigate("/messages")}
+            aria-label="Back to messages"
+            className="text-text-secondary hover:text-text-primary"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={21} />
           </button>
-          <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white text-sm font-semibold text-black">
+
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
             {otherProfile?.photoURL ? (
-              <img src={otherProfile.photoURL} alt="" className="h-full w-full object-cover" />
+              <img
+                src={otherProfile.photoURL}
+                alt=""
+                className="h-full w-full object-cover"
+              />
             ) : (
-              otherProfile?.displayName?.charAt(0).toUpperCase() || "?"
+              initial
             )}
           </div>
-          <div className="flex flex-col leading-tight">
-            <p className="text-sm font-medium text-white">
-              {otherProfile?.displayName || "..."}
-            </p>
-            <p
-              className={`text-[10px] ${
-                otherProfile?.online === true
-                  ? "text-green-400"
-                  : "text-gray-400"
-              }`}
+
+          <p className="truncate text-sm font-semibold text-text-primary">
+            {displayName}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled
+            title="Calls are coming later"
+            aria-label="Calls are coming later"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-text-muted opacity-50"
+          >
+            <Phone size={19} />
+          </button>
+
+          <div ref={menuRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              aria-label="Conversation options"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-text-secondary hover:bg-surface-2 hover:text-text-primary"
             >
-              {getPresenceLabel(otherProfile)}
-            </p>
+              <MoreVertical size={20} />
+            </button>
+
+            {menuOpen && (
+              <div className="absolute right-0 top-11 z-20 w-44 overflow-hidden rounded-xl border border-border bg-surface shadow-xl">
+                <button
+                  type="button"
+                  onClick={handleBlock}
+                  className="block w-full px-4 py-3 text-left text-sm text-text-primary hover:bg-surface-2"
+                >
+                  Block user
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleReport}
+                  className="block w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-surface-2"
+                >
+                  Report user
+                </button>
+              </div>
+            )}
           </div>
         </div>
+      </header>
 
-        <div className="flex items-center gap-3 pr-1">
-          <button
-            type="button"
-            aria-label="Call"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 transition hover:bg-white/5 hover:text-white"
-          >
-            <Phone size={18} />
-          </button>
-          <button
-            type="button"
-            aria-label="More options"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-white/80 transition hover:bg-white/5 hover:text-white"
-          >
-            <MoreVertical size={18} />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 space-y-2 overflow-y-auto bg-black pt-0">
-        {loading && <p className="text-sm text-text-secondary">Loading messages...</p>}
-
-        {!loading && messages.length === 0 && (
-          <p className="text-sm text-text-muted">No messages yet. Say hello!</p>
+      <main className="flex-1 overflow-y-auto px-4 pt-3">
+        {loading && (
+          <p className="text-center text-sm text-text-secondary">
+            Loading messages...
+          </p>
         )}
 
-        {messages.map((message) => {
-          const isMine = message.senderId === myUid;
-          return (
-            <div key={message.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+        {/* Small contact section, close to the chat header */}
+        {!loading && (
+          <section className="mx-auto mb-5 flex max-w-xs flex-col items-center border-b border-border pb-5 text-center">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-base font-semibold text-accent">
+              {otherProfile?.photoURL ? (
+                <img
+                  src={otherProfile.photoURL}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                initial
+              )}
+            </div>
+
+            <h1 className="mt-2 text-sm font-semibold text-text-primary">
+              {displayName}
+            </h1>
+
+            {jobTitle && (
+              <p className="mt-0.5 text-xs text-text-secondary">
+                {jobTitle}
+              </p>
+            )}
+
+            {/* This text exists only before the first message */}
+            {messages.length === 0 && (
+              <p className="mt-3 text-xs text-text-muted">
+                Start a conversation with {displayName}.
+              </p>
+            )}
+          </section>
+        )}
+
+        <div className="space-y-3 pb-5">
+          {messages.map((message) => {
+            const isMine = message.senderId === myUid;
+
+            return (
               <div
-                className={`max-w-[calc(100%-0.75rem)] rounded-2xl px-3 py-1.5 text-sm ${
-                  isMine
-                    ? "bg-[#0f0542] text-white"
-                    // Fixed: #121214 was nearly identical to the pure-black
-                    // page background behind it, so received bubbles were
-                    // basically invisible. zinc-800 + a subtle border gives
-                    // real contrast against black while staying dark/muted
-                    // compared to the sent bubble.
-                    : "border border-white/10 bg-zinc-800 text-white"
+                key={message.id}
+                className={`flex ${
+                  isMine ? "justify-end" : "justify-start"
                 }`}
               >
-                <p className="whitespace-pre-wrap">{message.text}</p>
-                <p className="mt-1 text-xs text-gray-400">
-                  {formatTime(message.createdAt)}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+                <div
+                  className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm ${
+                    isMine
+                      ? "rounded-br-md bg-accent text-white"
+                      : "rounded-bl-md border border-border bg-surface text-text-primary"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">
+                    {message.text}
+                  </p>
 
-      <form onSubmit={handleSubmit} className="mt-4 flex gap-2 border-t border-black bg-black pt-4">
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          maxLength={1000}
-          placeholder="Type a message..."
-          className="flex-1 rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/20"
-        />
-        <button
-          type="submit"
-          disabled={sending || !text.trim()}
-          className="flex items-center justify-center rounded-lg bg-white px-4 py-2 text-black hover:bg-zinc-200 disabled:opacity-50"
-        >
-          <Send size={16} />
-        </button>
+                  <div
+                    className={`mt-1 flex items-center gap-1 ${
+                      isMine ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    <span
+                      className={`text-[11px] ${
+                        isMine ? "text-white/70" : "text-text-muted"
+                      }`}
+                    >
+                      {formatTime(message.createdAt)}
+                    </span>
+
+                    {isMine && (
+                      <MessageStatus message={message} />
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </main>
+
+      <form
+        onSubmit={handleSubmit}
+        className="border-t border-border bg-surface px-4 py-3"
+      >
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            maxLength={1000}
+            placeholder="Write a message..."
+            className="flex-1 rounded-full border border-border bg-surface-2 px-4 py-2.5 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-accent"
+          />
+
+          <button
+            type="submit"
+            disabled={!canSend}
+            aria-label="Send message"
+            className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+              canSend
+                ? "bg-accent text-white hover:bg-accent-hover"
+                : "cursor-not-allowed bg-surface-2 text-text-muted"
+            }`}
+          >
+            <Send size={18} />
+          </button>
+        </div>
       </form>
     </div>
   );
@@ -411,11 +700,15 @@ export default function Messages() {
               >
                 <ArrowLeft size={20} />
               </button>
-              <h1 className="text-2xl font-semibold text-text-primary">Messages</h1>
+
+              <h1 className="text-2xl font-semibold text-text-primary">
+                Messages
+              </h1>
             </div>
+
             <Link
               to="/messages/new"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-on-accent hover:opacity-95 focus:outline-none focus:ring-0"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-on-accent hover:opacity-95"
             >
               <PlusSquare size={22} />
             </Link>
@@ -425,17 +718,24 @@ export default function Messages() {
             <div className="relative">
               <input
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(event) =>
+                  setSearchQuery(event.target.value)
+                }
                 placeholder="Search messages"
-                className="h-14 w-full rounded-xl border-0 bg-surface-2 px-12 py-5 text-lg text-text-primary outline-none focus:ring-0"
+                className="h-14 w-full rounded-xl border-0 bg-surface-2 px-12 py-5 text-lg text-text-primary outline-none"
               />
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
-                <SearchIcon size={20} />
-              </div>
+
+              <SearchIcon
+                size={20}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+              />
             </div>
           </div>
 
-          <ConversationList myUid={user.uid} searchQuery={searchQuery} />
+          <ConversationList
+            myUid={user.uid}
+            searchQuery={searchQuery}
+          />
         </>
       ) : (
         <ChatWindow myUid={user.uid} otherUid={otherUid} />

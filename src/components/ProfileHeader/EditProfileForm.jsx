@@ -2,22 +2,33 @@ import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { useAuth } from "../../context/AuthContext";
-import { uploadImageToWorker, validateImageFile } from "../../utils/uploadImage";
+import {
+  uploadImageToWorker,
+  validateImageFile,
+} from "../../utils/uploadImage";
 
 export default function EditProfileForm({ uid, profile, onDone }) {
   const { user } = useAuth();
-  const [displayName, setDisplayName] = useState(profile.displayName || "");
+
+  const [displayName, setDisplayName] = useState(
+    profile.displayName || ""
+  );
   const [bio, setBio] = useState(profile.bio || "");
+  const [jobTitle, setJobTitle] = useState(profile.jobTitle || "");
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(profile.photoURL || "");
+  const [imagePreview, setImagePreview] = useState(
+    profile.photoURL || ""
+  );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  function handleFileChange(e) {
-    const file = e.target.files[0];
+  function handleFileChange(event) {
+    const file = event.target.files[0];
+
     if (!file) return;
 
     const validationError = validateImageFile(file);
+
     if (validationError) {
       setError(validationError);
       return;
@@ -28,8 +39,8 @@ export default function EditProfileForm({ uid, profile, onDone }) {
     setImagePreview(URL.createObjectURL(file));
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
 
     if (!displayName.trim()) {
       setError("Display name can't be empty.");
@@ -44,18 +55,24 @@ export default function EditProfileForm({ uid, profile, onDone }) {
 
       if (imageFile) {
         const idToken = await user.getIdToken();
-        photoURL = await uploadImageToWorker(imageFile, "profile-pictures", idToken);
+
+        photoURL = await uploadImageToWorker(
+          imageFile,
+          "profile-pictures",
+          idToken
+        );
       }
 
       await updateDoc(doc(db, "users", uid), {
         displayName: displayName.trim(),
         bio: bio.trim(),
+        jobTitle: jobTitle.trim(),
         photoURL,
       });
 
       onDone();
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       setError("Couldn't save your profile. Please try again.");
     } finally {
       setSaving(false);
@@ -63,48 +80,91 @@ export default function EditProfileForm({ uid, profile, onDone }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 border-b border-border pb-6">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 border-b border-border pb-6"
+    >
       <div className="flex items-center gap-4">
         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-xl font-semibold text-text-primary">
           {imagePreview ? (
-            <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="h-full w-full object-cover"
+            />
           ) : (
             displayName.charAt(0).toUpperCase() || "?"
           )}
         </div>
+
         <label className="cursor-pointer rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-text-primary hover:border-accent">
           Change photo
-          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
         </label>
       </div>
 
       <div>
-        <label htmlFor="displayName" className="mb-1 block text-sm text-text-secondary">
+        <label
+          htmlFor="displayName"
+          className="mb-1 block text-sm text-text-secondary"
+        >
           Display name
         </label>
+
         <input
           id="displayName"
           type="text"
           value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
+          onChange={(event) => setDisplayName(event.target.value)}
           className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-text-primary outline-none focus:border-accent"
         />
       </div>
 
       <div>
-        <label htmlFor="bio" className="mb-1 block text-sm text-text-secondary">
+        <label
+          htmlFor="bio"
+          className="mb-1 block text-sm text-text-secondary"
+        >
           Bio
         </label>
+
         <textarea
           id="bio"
           value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          onChange={(event) => setBio(event.target.value)}
           maxLength={160}
           rows={3}
           className="w-full resize-none rounded-lg border border-border bg-surface-2 px-3 py-2 text-text-primary outline-none focus:border-accent"
           placeholder="Tell people about yourself"
         />
-        <p className="mt-1 text-right text-xs text-text-muted">{bio.length}/160</p>
+
+        <p className="mt-1 text-right text-xs text-text-muted">
+          {bio.length}/160
+        </p>
+      </div>
+
+      <div>
+        <label
+          htmlFor="jobTitle"
+          className="mb-1 block text-sm text-text-secondary"
+        >
+          Job title
+        </label>
+
+        <input
+          id="jobTitle"
+          type="text"
+          value={jobTitle}
+          onChange={(event) => setJobTitle(event.target.value)}
+          maxLength={60}
+          placeholder="For example: Product designer"
+          className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-text-primary outline-none focus:border-accent"
+        />
       </div>
 
       {error && <p className="text-sm text-red-400">{error}</p>}
@@ -117,6 +177,7 @@ export default function EditProfileForm({ uid, profile, onDone }) {
         >
           {saving ? "Saving..." : "Save changes"}
         </button>
+
         <button
           type="button"
           onClick={onDone}

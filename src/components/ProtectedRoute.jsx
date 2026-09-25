@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import DesktopNav from "./DesktopNav/DesktopNav";
 import MobileNav from "./MobileNav/MobileNav";
 import SplashScreen from "./SplashScreen/SplashScreen";
 
@@ -31,9 +32,10 @@ export default function ProtectedRoute({ children }) {
   }
 
   return (
-    <>
+    <div className="min-h-screen lg:pl-64">
+      <DesktopNav />
       {children}
       {!hideBottomNav && <MobileNav />}
-    </>
+    </div>
   );
 }

@@ -1,27 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { LogOut, Plus, Bell, Mail, Search, Home as HomeIcon, User, ChevronDown } from "lucide-react";
+import { Plus, Search, ChevronDown } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { logOut } from "../../firebase/auth";
 import { useFollowingIds } from "../../hooks/useFollowingIds";
 import { usePosts } from "../../hooks/usePosts";
 import { useUserProfile } from "../../hooks/useUserProfile";
-import { useNotifications } from "../../hooks/useNotifications";
-import { useUnreadMessageCount } from "../../hooks/useUnreadMessageCount";
 import PostCard from "../../components/PostCard/PostCard";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
-import MobileNav from "../../components/MobileNav/MobileNav";
-
-function NotificationBadge({ count, color = "bg-accent" }) {
-  if (count === 0) return null;
-  return (
-    <span
-      className={`absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full ${color} px-1 text-[10px] font-semibold text-white`}
-    >
-      {count > 9 ? "9+" : count}
-    </span>
-  );
-}
 
 export default function Home() {
   const { user } = useAuth();
@@ -34,9 +19,6 @@ export default function Home() {
   const authorIds = followingOnly ? followingIds : null;
   const { posts, loading: loadingPosts, error } = usePosts(authorIds);
   const loading = loadingFollowing || loadingPosts;
-  const { unreadCount } = useNotifications(uid);
-  const { unreadMessageCount } = useUnreadMessageCount(uid);
-
   const displayName = profile?.displayName || "You";
   const username = profile?.username || "";
   const photoURL = profile?.photoURL || "";
@@ -45,45 +27,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-bg">
       <div className="mx-auto flex max-w-6xl gap-8 px-4 py-5 sm:px-6 lg:px-8">
-        <aside className="sticky top-5 hidden h-[calc(100vh-2.5rem)] w-56 shrink-0 flex-col lg:flex">
-          <img src={gridspaceLogo} alt="Gridspace" className="h-8 w-auto" />
-
-         <MobileNav />
-
-          <Link
-            to="/create-post"
-            className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-on-accent hover:bg-accent-hover"
-          >
-            <Plus size={18} />
-            Create post
-          </Link>
-
-          <div className="mt-auto border-t border-border pt-4">
-            <Link to="/profile" className="flex items-center gap-3 rounded-xl p-3 hover:bg-surface">
-              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
-                {photoURL ? (
-                  <img src={photoURL} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  initial
-                )}
-              </div>
-
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-text-primary">{displayName}</p>
-                <p className="truncate text-xs text-text-muted">@{username}</p>
-              </div>
-            </Link>
-
-            <button
-              onClick={logOut}
-              className="mt-2 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-text-secondary hover:bg-surface hover:text-red-400"
-            >
-              <LogOut size={16} />
-              Log out
-            </button>
-          </div>
-        </aside>
-
         <main className="min-w-0 w-full max-w-2xl pb-24 lg:pb-0">
           <header className="relative mb-8 flex items-center justify-center lg:hidden">
             <img src={gridspaceLogo} alt="Gridspace" className="h-12 w-auto" />

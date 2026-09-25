@@ -41,12 +41,13 @@ export async function ensureConversation(currentUid, otherUid) {
 }
 
 export async function sendMessage(conversationId, senderId, recipientId, text) {
-  await addDoc(collection(db, "conversations", conversationId, "messages"), {
-    senderId,
-    text,
-    createdAt: serverTimestamp(),
-    read: false,
-  });
+await addDoc(collection(db, "conversations", conversationId, "messages"), {
+  senderId,
+  text,
+  createdAt: serverTimestamp(),
+  delivered: false,
+  read: false,
+});
 
   await updateDoc(doc(db, "conversations", conversationId), {
     lastMessage: text,
