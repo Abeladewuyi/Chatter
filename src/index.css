@@ -9,7 +9,7 @@
   anywhere in the app, instead of repeating raw hex codes everywhere.
 */
 :root {
-  --color-bg: #0d0d0d;
+  --color-bg: hsl(0deg 0% 0%);
   --color-surface: #0d0d0d;
   --color-surface-2: #1a1a1a;
   --color-border: #262626;
@@ -41,7 +41,7 @@
 
 
 html.light {
-  --color-bg: #000000;
+  --color-bg: hsl(0deg 0% 0%);
   --color-surface: #0d0d0d;
   --color-surface-2: #1a1a1a;
   --color-border: #262626;

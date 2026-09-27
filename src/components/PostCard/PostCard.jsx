@@ -9,6 +9,13 @@ import { useRepost } from "../../hooks/useRepost";
 import CommentSection from "../CommentSection/CommentSection";
 import PollDisplay from "../PollDisplay/PollDisplay";
 
+function animateActionIcon(event, keyframes) {
+  event.currentTarget.querySelector("svg")?.animate(keyframes, {
+    duration: 360,
+    easing: "ease-out",
+  });
+}
+
 function formatTimestamp(timestamp) {
   if (!timestamp) return "Just now";
   const date = timestamp.toDate();
@@ -75,19 +82,42 @@ export default function PostCard({ post, showComments = false }) {
         </div>
       </div>
 
-      {post.imageURL && (
-        <img src={post.imageURL} alt="" className="mt-3 w-full rounded-2xl object-cover" />
-      )}
+<p className="mt-3 whitespace-pre-wrap text-base text-text-primary">
+  {post.text}
+</p>
 
-      <p className="mt-3 whitespace-pre-wrap text-sm text-text-primary">{post.text}</p>
+{(post.imageURLs?.length > 0 || post.imageURL) && (
+  <div
+    className={`mt-3 grid gap-2 ${
+      (post.imageURLs?.length || 1) > 1 ? "grid-cols-2" : "grid-cols-1"
+    }`}
+  >
+    {(post.imageURLs?.length ? post.imageURLs : [post.imageURL]).map(
+      (imageURL, index) => (
+        <img
+          key={`${imageURL}-${index}`}
+          src={imageURL}
+          alt=""
+className="max-h-80 w-full rounded-xl bg-surface-2 object-contain"        />
+      )
+    )}
+  </div>
+)}
       {post.poll && <PollDisplay postId={post.id} poll={post.poll} />}
 
       <div className="mt-4 flex items-center justify-between text-text-secondary">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-8">
           <button
-            onClick={toggleLike}
+            onClick={(event) => {
+              animateActionIcon(event, [
+                { transform: "scale(1)" },
+                { transform: "scale(1.22)" },
+                { transform: "scale(1)" },
+              ]);
+              toggleLike();
+            }}
             className={`flex items-center gap-1.5 text-sm hover:text-text-primary ${
-              isLiked ? "text-text-primary" : ""
+              isLiked ? "text-red-500" : ""
             }`}
           >
             <Heart size={25} fill={isLiked ? "currentColor" : "none"} />
@@ -95,7 +125,14 @@ export default function PostCard({ post, showComments = false }) {
           </button>
 
           <button
-            onClick={() => navigate(`/post/${post.id}`)}
+            onClick={(event) => {
+              animateActionIcon(event, [
+                { transform: "translateY(0)" },
+                { transform: "translateY(-3px)" },
+                { transform: "translateY(0)" },
+              ]);
+              window.setTimeout(() => navigate(`/post/${post.id}`), 140);
+            }}
             className="flex items-center gap-1.5 text-sm hover:text-text-primary"
           >
             <MessageCircle size={25} />
@@ -103,7 +140,14 @@ export default function PostCard({ post, showComments = false }) {
           </button>
 
           <button
-            onClick={toggleRepost}
+            onClick={(event) => {
+              animateActionIcon(event, [
+                { transform: "rotate(0deg)" },
+                { transform: "rotate(-12deg)" },
+                { transform: "rotate(0deg)" },
+              ]);
+              toggleRepost();
+            }}
             className={`flex items-center gap-1.5 text-sm hover:text-text-primary ${
               isReposted ? "text-accent" : ""
             }`}
@@ -115,7 +159,15 @@ export default function PostCard({ post, showComments = false }) {
         </div>
 
         <button
-          onClick={toggleBookmark}
+          onClick={(event) => {
+            animateActionIcon(event, [
+              { transform: "scaleY(1)" },
+              { transform: "scaleY(0.82)" },
+              { transform: "scaleY(1.08)" },
+              { transform: "scaleY(1)" },
+            ]);
+            toggleBookmark();
+          }}
           className={`hover:text-text-primary ${isBookmarked ? "text-text-primary" : ""}`}
         >
           <Bookmark size={27} fill={isBookmarked ? "currentColor" : "none"} />

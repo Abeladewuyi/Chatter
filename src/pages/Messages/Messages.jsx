@@ -196,7 +196,7 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
   return (
     <div
       className={`flex items-center gap-3 rounded-xl px-3 py-5 transition-colors hover:bg-accent/5 ${
-        hasUnreadMessages ? "bg-accent/5" : "bg-transparent"
+        hasUnreadMessages ? "bg-white/[0.06]" : "bg-transparent"
       }`}
     >
       <Link
@@ -490,7 +490,7 @@ function ChatWindow({ myUid, otherUid }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-bg pb-20 lg:pb-0">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface px-4 py-3">
+      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-bg px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
@@ -594,6 +594,13 @@ function ChatWindow({ myUid, otherUid }) {
               </p>
             )}
 
+            <Link
+              to={`/profile/${otherUid}`}
+              className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-4 py-2 text-sm font-medium text-text-secondary ring-1 ring-white/20 transition-colors hover:text-text-primary"
+            >
+              View profile
+            </Link>
+
             {/* This text exists only before the first message */}
             {messages.length === 0 && (
               <p className="mt-3 text-xs text-text-muted">
@@ -603,7 +610,7 @@ function ChatWindow({ myUid, otherUid }) {
           </section>
         )}
 
-        <div className="space-y-3 pb-5">
+        <div className="-mx-2 space-y-2 pb-5">
           {messages.map((message) => {
             const isMine = message.senderId === myUid;
 
@@ -615,10 +622,10 @@ function ChatWindow({ myUid, otherUid }) {
                 }`}
               >
                 <div
-                  className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm ${
+                  className={`max-w-[75%] rounded-xl px-2.5 py-1.5 text-sm text-white ${
                     isMine
-                      ? "rounded-br-md bg-accent text-white"
-                      : "rounded-bl-md border border-border bg-surface text-text-primary"
+                      ? "rounded-br-md bg-sky-800"
+                      : "rounded-bl-md bg-zinc-700"
                   }`}
                 >
                   <p className="whitespace-pre-wrap">
@@ -632,7 +639,7 @@ function ChatWindow({ myUid, otherUid }) {
                   >
                     <span
                       className={`text-[11px] ${
-                        isMine ? "text-white/70" : "text-text-muted"
+                        "text-white/70"
                       }`}
                     >
                       {formatTime(message.createdAt)}
@@ -683,6 +690,7 @@ function ChatWindow({ myUid, otherUid }) {
 
 export default function Messages() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { uid: otherUid } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -694,8 +702,8 @@ export default function Messages() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => window.history.back()}
-                aria-label="Go back"
+                onClick={() => navigate("/")}
+                aria-label="Go to home"
                 className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 text-text-secondary transition hover:text-text-primary"
               >
                 <ArrowLeft size={20} />

@@ -7,7 +7,7 @@ export async function createPost({
   authorDisplayName,
   authorPhotoURL,
   text,
-  imageURL = "",
+imageURLs = [],
   tags = [],
   poll = null,
 }) {
@@ -17,7 +17,8 @@ export async function createPost({
     authorDisplayName,
     authorPhotoURL: authorPhotoURL || "",
     text,
-    imageURL,
+imageURL: imageURLs[0] || "",
+imageURLs,
     tags,
     poll, // { question, options: [{ id, text, votes }] } or null
     likesCount: 0,

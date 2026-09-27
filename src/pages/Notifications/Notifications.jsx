@@ -3,6 +3,7 @@ import { Heart, MessageCircle, UserPlus, Mail } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useUserProfile } from "../../hooks/useUserProfile";
+import { useFollow } from "../../hooks/useFollow";
 
 const NOTIFICATION_TEXT = {
   follow: "started following you",
@@ -20,8 +21,9 @@ const NOTIFICATION_ICON = {
   message: Mail,
 };
 
-function NotificationRow({ notification, onRead }) {
+function NotificationRow({ notification, onRead, currentUid }) {
   const { profile } = useUserProfile(notification.fromUserId);
+  const { isFollowing, toggleFollow } = useFollow(currentUid, notification.fromUserId);
   const Icon = NOTIFICATION_ICON[notification.type] || Heart;
 
   const linkTo =
@@ -33,29 +35,65 @@ function NotificationRow({ notification, onRead }) {
 
   if (!profile) return null;
 
+  async function handleFollowBack() {
+    await toggleFollow();
+    if (!notification.read) await onRead(notification.id);
+  }
+
   return (
-    <Link
-      to={linkTo}
-      onClick={() => !notification.read && onRead(notification.id)}
+    <div
       className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${
-        notification.read ? "border-border bg-surface" : "border-accent/40 bg-surface-2"
+        notification.read ? "border-border bg-surface" : "border-border bg-neutral-800"
       }`}
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
+      <Link
+        to={linkTo}
+        onClick={() => !notification.read && onRead(notification.id)}
+        aria-label={`View ${profile.displayName}'s profile`}
+        className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent"
+      >
         {profile.photoURL ? (
           <img src={profile.photoURL} alt="" className="h-full w-full object-cover" />
         ) : (
           profile.displayName?.charAt(0).toUpperCase() || "?"
         )}
-      </div>
+      </Link>
 
-      <div className="flex-1 text-sm text-text-primary">
-        <span className="font-medium">{profile.displayName}</span>{" "}
-        {NOTIFICATION_TEXT[notification.type] || "did something"}
-      </div>
+      <Link
+        to={linkTo}
+        onClick={() => !notification.read && onRead(notification.id)}
+        className="flex min-w-0 flex-1 items-center gap-2 text-sm text-text-primary"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="font-medium">{profile.displayName}</span>{" "}
+          {NOTIFICATION_TEXT[notification.type] || "did something"}
+        </span>
 
-      <Icon size={16} className="shrink-0 text-text-muted" />
-    </Link>
+        {notification.type !== "follow" && (
+          <Icon size={16} className="shrink-0 text-text-muted" />
+        )}
+      </Link>
+
+      {notification.type === "follow" && (
+        isFollowing ? (
+          <Link
+            to={`/messages/${notification.fromUserId}`}
+            onClick={() => !notification.read && onRead(notification.id)}
+            className="shrink-0 rounded-full bg-surface-2 px-3 py-1.5 text-xs font-medium text-text-primary hover:bg-surface"
+          >
+            Message
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={handleFollowBack}
+            className="shrink-0 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-black transition hover:bg-gray-200"
+          >
+            Follow back
+          </button>
+        )
+      )}
+    </div>
   );
 }
 
@@ -84,7 +122,12 @@ export default function Notifications() {
 
       <div className="flex flex-col gap-2">
         {notifications.map((n) => (
-          <NotificationRow key={n.id} notification={n} onRead={markAsRead} />
+          <NotificationRow
+            key={n.id}
+            notification={n}
+            onRead={markAsRead}
+            currentUid={user.uid}
+          />
         ))}
       </div>
     </div>

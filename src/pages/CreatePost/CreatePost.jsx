@@ -1,10 +1,20 @@
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { X, Code2, Palette, BarChart3, Image as ImageIcon, ChevronDown } from "lucide-react";
+import {
+  X,
+  Code2,
+  Palette,
+  BarChart3,
+  Image as ImageIcon,
+  ChevronDown,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { createPost } from "../../firebase/posts";
-import { uploadImageToWorker, validateImageFile } from "../../utils/uploadImage";
+import {
+  uploadImageToWorker,
+  validateImageFile,
+} from "../../utils/uploadImage";
 
 export default function CreatePost() {
   const navigate = useNavigate();
@@ -13,8 +23,8 @@ export default function CreatePost() {
   const fileInputRef = useRef(null);
 
   const [text, setText] = useState("");
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [error, setError] = useState("");
@@ -24,44 +34,62 @@ export default function CreatePost() {
   const [pollOpen, setPollOpen] = useState(false);
   const [pollQuestion, setPollQuestion] = useState("");
   const [pollOptions, setPollOptions] = useState(["", "", ""]);
-  const [pollVotes, setPollVotes] = useState([0, 0, 0]);
-
-  const displayName = profile?.displayName || "You";
-  const initial = displayName.charAt(0).toUpperCase();
 
   function handleImageButtonClick() {
     fileInputRef.current?.click();
   }
 
   function handleFileChange(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+    const selectedFiles = Array.from(event.target.files || []);
 
-    const validationError = validateImageFile(file);
-    if (validationError) {
-      setError(validationError);
+    if (selectedFiles.length === 0) return;
+
+    if (imageFiles.length + selectedFiles.length > 4) {
+      setError("You can add up to 4 images to one post.");
       return;
     }
 
+    for (const file of selectedFiles) {
+      const validationError = validateImageFile(file);
+
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
+    }
+
     setError("");
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    setImageFiles((current) => [...current, ...selectedFiles]);
+    setImagePreviews((current) => [
+      ...current,
+      ...selectedFiles.map((file) => URL.createObjectURL(file)),
+    ]);
+
+    event.target.value = "";
   }
 
-  function removeImage() {
-    setImageFile(null);
-    setImagePreview("");
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  function removeImage(index) {
+    setImageFiles((current) =>
+      current.filter((_, imageIndex) => imageIndex !== index)
+    );
+
+    setImagePreviews((current) =>
+      current.filter((_, imageIndex) => imageIndex !== index)
+    );
   }
 
   function addTag(newTag) {
     const sanitizedTag = newTag.trim();
+
     if (!sanitizedTag || !sanitizedTag.startsWith("#")) return;
 
     setTags((current) => {
       const next = [...current, sanitizedTag];
-      return next.filter((tag, index, array) => array.indexOf(tag) === index);
+      return next.filter(
+        (tag, index, array) => array.indexOf(tag) === index
+      );
     });
+
     setTagInput("");
   }
 
@@ -79,17 +107,20 @@ export default function CreatePost() {
 
   function addPollOption() {
     setPollOptions((current) => [...current, ""]);
-    setPollVotes((current) => [...current, 0]);
   }
 
   function updatePollOption(index, value) {
-    setPollOptions((current) => current.map((option, optionIndex) => (optionIndex === index ? value : option)));
+    setPollOptions((current) =>
+      current.map((option, optionIndex) =>
+        optionIndex === index ? value : option
+      )
+    );
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!text.trim() && !imageFile) {
+    if (!text.trim() && imageFiles.length === 0) {
       setError("Write something or add an image before posting.");
       return;
     }
@@ -101,7 +132,9 @@ export default function CreatePost() {
 
     if (pollOpen) {
       const trimmedQuestion = pollQuestion.trim();
-      const trimmedOptions = pollOptions.map((option) => option.trim()).filter(Boolean);
+      const trimmedOptions = pollOptions
+        .map((option) => option.trim())
+        .filter(Boolean);
 
       if (!trimmedQuestion) {
         setError("Add a poll question before posting.");
@@ -124,18 +157,20 @@ export default function CreatePost() {
             .map((option, index) => ({
               id: `option-${index}`,
               text: option.trim(),
-              votes: 0, // always starts at 0 — pollVotes state above was never real vote data
+              votes: 0,
             }))
             .filter((option) => option.text),
         }
       : null;
 
     try {
-      let imageURL = "";
-      if (imageFile) {
-        const idToken = await user.getIdToken();
-        imageURL = await uploadImageToWorker(imageFile, "post-images", idToken);
-      }
+      const idToken = await user.getIdToken(true);
+
+      const imageURLs = await Promise.all(
+        imageFiles.map((file) =>
+          uploadImageToWorker(file, "post-images", idToken)
+        )
+      );
 
       await createPost({
         authorId: user.uid,
@@ -145,13 +180,13 @@ export default function CreatePost() {
         text: `${text.trim()} ${tags.join(" ")}`.trim(),
         tags,
         poll: pollPayload,
-        imageURL,
+        imageURLs,
       });
 
       navigate("/");
     } catch (firebaseError) {
       console.error(firebaseError);
-      setError("Couldn't create your post. Please try again.");
+      setError(firebaseError.message || "Couldn't create your post.");
     } finally {
       setSubmitting(false);
     }
@@ -178,32 +213,34 @@ export default function CreatePost() {
           onSubmit={handleSubmit}
           className="rounded-2xl border border-border bg-surface p-4"
         >
-          <div className="mt-1">
-            <textarea
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              maxLength={500}
-              rows={8}
-              placeholder="What's on your mind?"
-              className="w-full resize-none bg-transparent p-0 text-base text-text-primary outline-none placeholder:text-text-muted"
-            />
-          </div>
+          <textarea
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            maxLength={500}
+            rows={8}
+            placeholder="What's on your mind?"
+            className="w-full resize-none bg-transparent p-0 text-base text-text-primary outline-none placeholder:text-text-muted"
+          />
 
-          {imagePreview && (
-            <div className="relative mt-4">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="max-h-80 w-full rounded-xl object-cover"
-              />
-              <button
-                type="button"
-                onClick={removeImage}
-                aria-label="Remove image"
-                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black/90"
-              >
-                <X size={16} />
-              </button>
+          {imagePreviews.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {imagePreviews.map((preview, index) => (
+                <div key={preview} className="relative">
+                  <img
+                    src={preview}
+                    alt={`Selected image ${index + 1}`}
+className="max-h-80 w-full rounded-xl bg-surface-2 object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    aria-label={`Remove image ${index + 1}`}
+                    className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
@@ -211,6 +248,7 @@ export default function CreatePost() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            multiple
             onChange={handleFileChange}
             className="hidden"
           />
@@ -219,19 +257,23 @@ export default function CreatePost() {
             <p className="mb-3 text-sm font-medium text-text-secondary">
               Uploads
             </p>
+
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <button
                 type="button"
                 onClick={handleImageButtonClick}
                 className={`inline-flex items-center justify-center gap-1.5 rounded-full border px-2 py-2 text-[11px] font-medium transition ${
-                  imageFile
+                  imageFiles.length > 0
                     ? "border-accent bg-accent/10 text-text-primary"
                     : "border-border bg-surface-2 text-text-primary hover:border-accent"
                 }`}
               >
                 <ImageIcon size={13} />
-                {imageFile ? "Image added" : "Images"}
+                {imageFiles.length > 0
+                  ? `${imageFiles.length} image${imageFiles.length === 1 ? "" : "s"} added`
+                  : "Images"}
               </button>
+
               <button
                 type="button"
                 disabled
@@ -240,6 +282,7 @@ export default function CreatePost() {
                 <Code2 size={13} />
                 Code
               </button>
+
               <button
                 type="button"
                 disabled
@@ -248,6 +291,7 @@ export default function CreatePost() {
                 <Palette size={13} />
                 Design
               </button>
+
               <button
                 type="button"
                 onClick={() => setPollOpen((current) => !current)}
@@ -266,36 +310,31 @@ export default function CreatePost() {
           {pollOpen && (
             <div className="mt-4 rounded-2xl border border-border bg-surface-2 p-3">
               <div className="space-y-2">
-                <div className="rounded-xl border border-border bg-surface px-3 py-3">
-                  <input
-                    type="text"
-                    value={pollQuestion}
-                    onChange={(event) => setPollQuestion(event.target.value)}
-                    placeholder="Question"
-                    className="w-full bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
-                  />
-                </div>
+                <input
+                  type="text"
+                  value={pollQuestion}
+                  onChange={(event) => setPollQuestion(event.target.value)}
+                  placeholder="Question"
+                  className="w-full rounded-xl border border-border bg-surface px-3 py-3 text-sm text-text-primary outline-none"
+                />
 
                 {pollOptions.map((option, index) => (
-                  <div
+                  <input
                     key={`poll-option-${index}`}
-                    className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-3"
-                  >
-                    <input
-                      type="text"
-                      value={option}
-                      onChange={(event) => updatePollOption(index, event.target.value)}
-                      placeholder="Answer"
-                      className="flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
-                    />
-                  </div>
+                    type="text"
+                    value={option}
+                    onChange={(event) =>
+                      updatePollOption(index, event.target.value)
+                    }
+                    placeholder="Answer"
+                    className="w-full rounded-xl border border-border bg-surface px-3 py-3 text-sm text-text-primary outline-none"
+                  />
                 ))}
 
                 <button
                   type="button"
                   onClick={addPollOption}
-                  className="flex w-full items-center justify-center rounded-xl border border-dashed border-border bg-surface px-3 py-3 text-2xl text-text-secondary hover:border-accent hover:text-text-primary"
-                  aria-label="Add poll answer"
+                  className="flex w-full items-center justify-center rounded-xl border border-dashed border-border bg-surface px-3 py-3 text-2xl text-text-secondary"
                 >
                   +
                 </button>
@@ -308,7 +347,7 @@ export default function CreatePost() {
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full border border-white/60 bg-transparent px-2.5 py-1 text-xs font-semibold text-text-primary shadow-[0_0_0_1px_rgba(255,255,255,0.18)]"
+                  className="rounded-full border border-border px-2.5 py-1 text-xs text-text-primary"
                 >
                   {tag}
                 </span>
@@ -320,19 +359,21 @@ export default function CreatePost() {
                 onChange={(event) => setTagInput(event.target.value)}
                 onKeyDown={handleTagKeyDown}
                 placeholder={tags.length === 0 ? "#Add tags..." : ""}
-                className="min-w-[120px] flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
+                className="min-w-[120px] flex-1 bg-transparent text-sm text-text-primary outline-none"
               />
             </div>
           </div>
 
-          <div className="mt-4 relative">
+          <div className="relative mt-4">
             <button
               type="button"
               onClick={() => setReplyOpen((current) => !current)}
               className="w-full rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-left"
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-text-primary">Reply settings</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-text-primary">
+                  Reply settings
+                </span>
                 <div className="flex items-center gap-2 text-text-secondary">
                   <span className="text-xs">{replySetting}</span>
                   <ChevronDown size={16} />
@@ -341,7 +382,7 @@ export default function CreatePost() {
             </button>
 
             {replyOpen && (
-              <div className="absolute left-0 right-0 z-10 mt-2 overflow-hidden rounded-xl border border-border bg-[#111111] shadow-lg">
+              <div className="absolute left-0 right-0 z-10 mt-2 overflow-hidden rounded-xl border border-border bg-surface shadow-lg">
                 {[
                   "Everyone can reply",
                   "Verified users can reply",
@@ -354,11 +395,7 @@ export default function CreatePost() {
                       setReplySetting(option);
                       setReplyOpen(false);
                     }}
-                    className={`block w-full px-3 py-2.5 text-left text-sm transition ${
-                      replySetting === option
-                        ? "bg-surface-2 text-text-primary"
-                        : "text-text-secondary hover:bg-surface-2"
-                    }`}
+                    className="block w-full px-3 py-2.5 text-left text-sm text-text-secondary hover:bg-surface-2"
                   >
                     {option}
                   </button>
@@ -367,23 +404,23 @@ export default function CreatePost() {
             )}
           </div>
 
-          {error && (
-            <p className="mt-3 text-sm text-red-400">{error}</p>
-          )}
+          {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
 
           <div className="mt-5 border-t border-border pt-4">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs text-text-muted">
-                {text.length}/500
-              </p>
-            </div>
+            <p className="mb-3 text-xs text-text-muted">{text.length}/500</p>
 
             <button
               type="submit"
-              disabled={submitting || (!text.trim() && !imageFile)}
-              className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:bg-gray-300"
+              disabled={
+                submitting || (!text.trim() && imageFiles.length === 0)
+              }
+              className="w-full rounded-xl bg-white px-4 py-3 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:bg-gray-300"
             >
-              {submitting ? (imageFile ? "Uploading..." : "Posting...") : "Post"}
+              {submitting
+                ? imageFiles.length > 0
+                  ? "Uploading..."
+                  : "Posting..."
+                : "Post"}
             </button>
           </div>
         </form>
