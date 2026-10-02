@@ -8,6 +8,41 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import PostCard from "../../components/PostCard/PostCard";
 import gridspaceLogo from "../../assets/gridspace-logo.jpeg";
 
+function FeedSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[0, 1, 2].map((item) => (
+        <div key={item} className="border-b border-white/10 py-4">
+          <div className="flex items-center gap-3">
+            <div className="skeleton skeleton-circle h-10 w-10" />
+            <div className="flex-1 space-y-2">
+              <div className="skeleton h-3.5 w-28 rounded-full" />
+              <div className="skeleton h-2.5 w-24 rounded-full" />
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <div className="skeleton h-3 w-full rounded-full" />
+            <div className="skeleton h-3 w-5/6 rounded-full" />
+            <div className="skeleton h-3 w-2/3 rounded-full" />
+          </div>
+
+          <div className="mt-4 skeleton h-64 w-full rounded-2xl" />
+
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-5">
+              <div className="skeleton h-5 w-10 rounded-full" />
+              <div className="skeleton h-5 w-10 rounded-full" />
+              <div className="skeleton h-5 w-10 rounded-full" />
+            </div>
+            <div className="skeleton skeleton-circle h-6 w-6" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Home() {
   const { user } = useAuth();
   const uid = user?.uid;
@@ -82,7 +117,11 @@ export default function Home() {
             </div>
           </div>
 
-          {loading && <p className="py-8 text-center text-sm text-text-secondary">Loading feed...</p>}
+          <div
+            className={`transition-opacity duration-500 ease-out ${loading ? "opacity-100" : "hidden opacity-0"}`}
+          >
+            <FeedSkeleton />
+          </div>
 
           {error && posts.length === 0 && (
             <p className="rounded-xl border border-red-400/30 bg-red-400/10 p-4 text-sm text-red-400">
@@ -114,7 +153,9 @@ export default function Home() {
             </div>
           )}
 
-          <div className="flex flex-col">
+          <div
+            className={`flex flex-col transition-opacity duration-500 ease-out ${loading ? "pointer-events-none opacity-0" : "opacity-100"}`}
+          >
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
