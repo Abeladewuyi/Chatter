@@ -9,30 +9,30 @@
   anywhere in the app, instead of repeating raw hex codes everywhere.
 */
 :root {
-  --color-bg: hsl(0deg 0% 0%);
+  --color-bg: #080808;
   --color-surface: #0d0d0d;
-  --color-surface-2: #1a1a1a;
-  --color-border: #262626;
+  --color-surface-2: #242424;
+  --color-border: #1c1c1c;
 
-  --color-accent: #ffffff;
-  --color-accent-hover: #d4d4d4;
-  --color-on-accent: #000000;
+  --color-accent: #f2f2f2;
+  --color-accent-hover: #d7d7d7;
+  --color-on-accent: #080808;
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a3a3a3;
+  --color-text-primary: #f2f2f2;
+  --color-text-secondary: #9a9a9a;
   --color-text-muted: #6b6b6b;
 }
 
 :root {
-  --app-bg: #0a0a0f;
-  --app-surface: #131320;
-  --app-surface-2: #1a1a2a;
-  --app-border: #26263a;
-  --app-accent: #7c3aed;
-  --app-accent-hover: #6d28d9;
-  --app-text-primary: #f4f4f6;
-  --app-text-secondary: #b8b8c7;
-  --app-text-muted: #9292a4;
+  --app-bg: #080808;
+  --app-surface: #0d0d0d;
+  --app-surface-2: #242424;
+  --app-border: #1c1c1c;
+  --app-accent: #f2f2f2;
+  --app-accent-hover: #d7d7d7;
+  --app-text-primary: #f2f2f2;
+  --app-text-secondary: #9a9a9a;
+  --app-text-muted: #6b6b6b;
 }
 
 :root {
@@ -41,29 +41,29 @@
 
 
 html.light {
-  --color-bg: hsl(0deg 0% 0%);
+  --color-bg: #080808;
   --color-surface: #0d0d0d;
-  --color-surface-2: #1a1a1a;
-  --color-border: #262626;
+  --color-surface-2: #242424;
+  --color-border: #1c1c1c;
 
-  --color-accent: #ffffff;
-  --color-accent-hover: #d4d4d4;
-  --color-on-accent: #000000;
+  --color-accent: #f2f2f2;
+  --color-accent-hover: #d7d7d7;
+  --color-on-accent: #080808;
 
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a3a3a3;
+  --color-text-primary: #f2f2f2;
+  --color-text-secondary: #9a9a9a;
   --color-text-muted: #6b6b6b;
 }
 [data-theme="light"] {
-  --app-bg: #0a0a0f;
-  --app-surface: #131320;
-  --app-surface-2: #1a1a2a;
-  --app-border: #26263a;
-  --app-accent: #7c3aed;
-  --app-accent-hover: #6d28d9;
-  --app-text-primary: #f4f4f6;
-  --app-text-secondary: #b8b8c7;
-  --app-text-muted: #9292a4;
+  --app-bg: #080808;
+  --app-surface: #0d0d0d;
+  --app-surface-2: #242424;
+  --app-border: #1c1c1c;
+  --app-accent: #f2f2f2;
+  --app-accent-hover: #d7d7d7;
+  --app-text-primary: #f2f2f2;
+  --app-text-secondary: #9a9a9a;
+  --app-text-muted: #6b6b6b;
 }
 
 .pull-refresh-indicator {
@@ -130,7 +130,7 @@ body {
 *,
 *::before,
 *::after {
-  border-color: transparent !important;
+  border-color: var(--color-border, #1c1c1c) !important;
   outline: none !important;
 }
 
@@ -140,7 +140,7 @@ body {
   justify-content: center;
   width: 100vw;
   height: 100vh;
-  background: var(--color-bg);
+  background: rgb(0, 0, 0);
 }
 
 .typing-logo-wrap {
