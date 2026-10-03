@@ -8,7 +8,7 @@ import {
   CheckCheck,
   MoreVertical,
   Phone,
-  PlusSquare,
+  SquarePen,
   Send,
   Search as SearchIcon,
 } from "lucide-react";
@@ -195,8 +195,8 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl px-3 py-5 transition-colors hover:bg-accent/5 ${
-        hasUnreadMessages ? "bg-white/[0.06]" : "bg-transparent"
+      className={`flex items-center gap-2 px-0 py-2.5 transition-colors hover:bg-accent/5 ${
+        hasUnreadMessages ? "bg-white/[0.04]" : "bg-transparent"
       }`}
     >
       <Link
@@ -204,7 +204,7 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
         onClick={() =>
           markConversationAsRead(conversation.id, myUid)
         }
-        className="flex min-w-0 flex-1 items-center gap-4"
+        className="flex min-w-0 flex-1 items-center gap-3.5"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
           {profile.photoURL ? (
@@ -220,23 +220,23 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-lg font-medium text-text-primary">
+            <div className="min-w-0 space-y-1">
+              <p className="text-base font-medium text-text-primary">
                 {profile.displayName}
               </p>
 
               <p
                 className={`truncate text-sm ${
                   hasUnreadMessages
-                    ? "font-medium text-text-primary"
-                    : "text-text-muted"
+                    ? "font-medium text-white/75"
+                    : "text-white/50"
                 }`}
               >
                 {conversation.lastMessage || "Say hello!"}
               </p>
             </div>
 
-            <p className="shrink-0 pl-2 text-xs text-text-muted">
+            <p className="shrink-0 pl-2 text-[11px] text-white/45">
               {formatRelativeTimestamp(
                 conversation.lastMessageAt
               )}
@@ -324,7 +324,7 @@ function ConversationList({ myUid, searchQuery }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-0">
       {conversations.map((conversation) => (
         <ConversationRow
           key={conversation.id}
@@ -718,11 +718,11 @@ export default function Messages() {
               to="/messages/new"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-accent text-on-accent hover:opacity-95"
             >
-              <PlusSquare size={22} />
+              <SquarePen size={20} />
             </Link>
           </div>
 
-          <div className="mb-6 mt-10">
+          <div className="mb-4 mt-3">
             <div className="relative">
               <input
                 value={searchQuery}
@@ -730,7 +730,7 @@ export default function Messages() {
                   setSearchQuery(event.target.value)
                 }
                 placeholder="Search messages"
-                className="h-14 w-full rounded-xl border-0 bg-surface-2 px-12 py-5 text-lg text-text-primary outline-none"
+                className="h-12 w-full rounded-xl border border-[#252631] bg-[#121318] px-12 py-4 text-base text-text-primary outline-none placeholder:text-white/45"
               />
 
               <SearchIcon
