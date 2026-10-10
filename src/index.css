@@ -9,14 +9,14 @@
   anywhere in the app, instead of repeating raw hex codes everywhere.
 */
 :root {
-  --color-bg: #080808;
+  --color-bg: #010013;
   --color-surface: #0d0d0d;
   --color-surface-2: #242424;
   --color-border: #1c1c1c;
 
   --color-accent: #f2f2f2;
   --color-accent-hover: #d7d7d7;
-  --color-on-accent: #080808;
+  --color-on-accent: #010013;
 
   --color-text-primary: #f2f2f2;
   --color-text-secondary: #9a9a9a;
@@ -24,7 +24,7 @@
 }
 
 :root {
-  --app-bg: #080808;
+  --app-bg: #010013;
   --app-surface: #0d0d0d;
   --app-surface-2: #242424;
   --app-border: #1c1c1c;
@@ -41,21 +41,21 @@
 
 
 html.light {
-  --color-bg: #080808;
+  --color-bg: #010013;
   --color-surface: #0d0d0d;
   --color-surface-2: #242424;
   --color-border: #1c1c1c;
 
   --color-accent: #f2f2f2;
   --color-accent-hover: #d7d7d7;
-  --color-on-accent: #080808;
+  --color-on-accent: #010013;
 
   --color-text-primary: #f2f2f2;
   --color-text-secondary: #9a9a9a;
   --color-text-muted: #6b6b6b;
 }
 [data-theme="light"] {
-  --app-bg: #080808;
+  --app-bg: #010013;
   --app-surface: #0d0d0d;
   --app-surface-2: #242424;
   --app-border: #1c1c1c;

@@ -91,7 +91,7 @@ function UnreadCountBadge({ count }) {
   if (count === 0) return null;
 
   return (
-    <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-accent px-1.5 text-[11px] font-semibold text-on-accent">
+    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F2F2F2] text-[9px] font-semibold text-[#171822] leading-none">
       {count > 9 ? "9+" : count}
     </span>
   );
@@ -195,8 +195,8 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
 
   return (
     <div
-      className={`flex items-center gap-2 px-0 py-2.5 transition-colors hover:bg-accent/5 ${
-        hasUnreadMessages ? "bg-white/[0.04]" : "bg-transparent"
+      className={`flex items-center gap-2 rounded-xl px-1.5 py-2.5 transition-colors hover:bg-accent/5 ${
+        hasUnreadMessages ? "bg-[#171822]" : "bg-transparent"
       }`}
     >
       <Link
@@ -206,7 +206,7 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
         }
         className="flex min-w-0 flex-1 items-center gap-3.5"
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-base font-semibold text-accent">
           {profile.photoURL ? (
             <img
               src={profile.photoURL}
@@ -221,12 +221,12 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 space-y-1">
-              <p className="text-base font-medium text-text-primary">
+              <p className="text-lg font-medium text-text-primary">
                 {profile.displayName}
               </p>
 
               <p
-                className={`truncate text-sm ${
+                className={`truncate text-[15px] ${
                   hasUnreadMessages
                     ? "font-medium text-white/75"
                     : "text-white/50"
@@ -236,16 +236,17 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
               </p>
             </div>
 
-            <p className="shrink-0 pl-2 text-[11px] text-white/45">
-              {formatRelativeTimestamp(
-                conversation.lastMessageAt
-              )}
-            </p>
+            <div className="flex shrink-0 flex-col items-end justify-center gap-2 pl-2 pt-0.5">
+              <p className="text-[13px] leading-none text-white/45">
+                {formatRelativeTimestamp(
+                  conversation.lastMessageAt
+                )}
+              </p>
+              <UnreadCountBadge count={unreadMessages.length} />
+            </div>
           </div>
         </div>
       </Link>
-
-      <UnreadCountBadge count={unreadMessages.length} />
 
       <div ref={menuRef} className="relative shrink-0">
         <button
@@ -730,7 +731,7 @@ export default function Messages() {
                   setSearchQuery(event.target.value)
                 }
                 placeholder="Search messages"
-                className="h-12 w-full rounded-xl border border-[#252631] bg-[#121318] px-12 py-4 text-base text-text-primary outline-none placeholder:text-white/45"
+                className="h-12 w-full rounded-xl border border-[#252631] bg-[#121318] px-12 py-4 text-[15px] text-text-primary outline-none placeholder:text-white/45"
               />
 
               <SearchIcon
