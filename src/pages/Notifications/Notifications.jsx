@@ -52,8 +52,8 @@ function NotificationRow({ notification, onRead, currentUid }) {
 
   return (
     <div
-      className={`flex items-center gap-3 rounded-xl border p-3 transition-colors ${
-        notification.read ? "border-border bg-surface" : "border-border bg-neutral-800"
+      className={`flex items-center gap-3 rounded-xl p-3 transition-colors ${
+        notification.read ? "bg-transparent" : "bg-white/3"
       }`}
     >
       <Link
@@ -142,7 +142,7 @@ export default function Notifications() {
       {loading && <p className="text-sm text-text-secondary">Loading notifications...</p>}
 
       {!loading && notifications.length === 0 && (
-        <div className="rounded-2xl border border-border bg-surface p-8 text-center text-text-secondary">
+        <div className="rounded-2xl bg-transparent p-8 text-center text-text-secondary">
           No notifications yet.
         </div>
       )}
@@ -153,7 +153,7 @@ export default function Notifications() {
             <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">Follows</h2>
 
             {followNotifications.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface p-3 text-sm text-text-secondary">
+              <p className="rounded-xl bg-transparent p-3 text-sm text-text-secondary">
                 No new followers yet.
               </p>
             ) : (
@@ -180,7 +180,7 @@ export default function Notifications() {
             <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">Mentions</h2>
 
             {mentionOrLikeNotifications.length === 0 ? (
-              <p className="rounded-xl border border-border bg-surface p-3 text-sm text-text-secondary">
+              <p className="rounded-xl bg-transparent p-3 text-sm text-text-secondary">
                 No mentions yet.
               </p>
             ) : (
