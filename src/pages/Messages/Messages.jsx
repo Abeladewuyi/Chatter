@@ -237,7 +237,7 @@ function ConversationRow({ conversation, myUid, searchQuery }) {
             </div>
 
             <div className="flex shrink-0 flex-col items-end justify-center gap-2 pl-2 pt-0.5">
-              <p className="text-[13px] leading-none text-white/45">
+              <p className="text-[14px] leading-none text-white/45">
                 {formatRelativeTimestamp(
                   conversation.lastMessageAt
                 )}

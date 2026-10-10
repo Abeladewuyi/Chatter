@@ -74,7 +74,7 @@ export default function DesktopNav() {
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-border bg-black px-5 py-7 lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 flex-col border-r border-white/10 bg-[rgba(12,12,15,0.52)] px-5 py-7 shadow-[0_0_0_1px_rgba(255,255,255,0.04),0_25px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:flex">
       <NavLink to="/" className="mb-10 px-3" aria-label="Gridspace home">
         <img src={gridspaceLogo} alt="Gridspace" className="h-9 w-auto" />
       </NavLink>
@@ -97,7 +97,12 @@ export default function DesktopNav() {
               }`}
               aria-current={isActive ? "page" : undefined}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon
+                size={20}
+                strokeWidth={2}
+                fill={isActive ? "currentColor" : "none"}
+                className={isActive ? "text-text-primary" : "text-text-secondary"}
+              />
               <span>{label}</span>
               {badge && <NotificationBadge count={badgeCounts[badge]} />}
             </NavLink>
@@ -107,7 +112,7 @@ export default function DesktopNav() {
 
       <div ref={menuRef} className="relative mt-auto border-t border-border pt-4">
         {accountMenuOpen && (
-          <div className="absolute bottom-16 left-0 right-0 overflow-hidden rounded-xl border border-border bg-surface shadow-xl">
+          <div className="absolute bottom-16 left-0 right-0 overflow-hidden rounded-xl border border-white/10 bg-[rgba(20,20,24,0.82)] shadow-xl backdrop-blur-xl">
             <button
               type="button"
               onClick={() => {

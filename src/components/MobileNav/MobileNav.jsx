@@ -63,13 +63,13 @@ export default function MobileNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-5 lg:hidden">
       <div
         ref={containerRef}
-        className="relative flex items-center gap-8 rounded-full border-2 border-neutral-700 bg-black px-8 py-3.5 shadow-lg"
+        className="relative flex items-center gap-8 rounded-full border border-white/10 bg-[rgba(18,18,22,0.62)] px-8 py-3.5 shadow-[0_12px_40px_rgba(0,0,0,0.38)] backdrop-blur-xl"
       >
         {/* The sliding "you are here" circle — hidden until we've measured
             a real position, so it doesn't flash in the wrong spot on load */}
         {indicatorLeft !== null && (
           <span
-            className="absolute top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-700 transition-all duration-300 ease-out"
+            className="absolute top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/8 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-all duration-300 ease-out"
             style={{ left: indicatorLeft }}
           />
         )}
@@ -81,7 +81,7 @@ export default function MobileNav() {
             activeIndex === 0 ? "text-text-primary" : "text-text-muted"
           }`}
         >
-          <HomeIcon size={22} />
+          <HomeIcon size={22} fill={activeIndex === 0 ? "currentColor" : "none"} />
         </Link>
 
         <Link
@@ -91,7 +91,7 @@ export default function MobileNav() {
             activeIndex === 1 ? "text-text-primary" : "text-text-muted"
           }`}
         >
-          <MessageCircle size={22} />
+          <MessageCircle size={22} fill={activeIndex === 1 ? "currentColor" : "none"} />
           <NotificationBadge count={unreadMessageCount} />
         </Link>
 
@@ -101,7 +101,7 @@ export default function MobileNav() {
           aria-label="Create post"
           className="relative z-10 flex items-center justify-center text-text-primary"
         >
-          <Plus size={22} />
+          <Plus size={22} fill="currentColor" />
         </Link>
 
         <Link
@@ -111,7 +111,7 @@ export default function MobileNav() {
             activeIndex === 3 ? "text-text-primary" : "text-text-muted"
           }`}
         >
-          <Bell size={22} />
+          <Bell size={22} fill={activeIndex === 3 ? "currentColor" : "none"} />
           <NotificationBadge count={unreadCount} />
         </Link>
 

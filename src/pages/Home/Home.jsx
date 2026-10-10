@@ -82,7 +82,7 @@ export default function Home() {
 
           <Link
             to="/create-post"
-            className="mb-5 block rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-accent"
+            className="mb-5 block rounded-2xl border border-white/10 bg-[rgba(18,18,22,0.65)] p-4 transition-colors hover:border-white/20"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-2 text-sm font-semibold text-accent">

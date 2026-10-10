@@ -16,7 +16,7 @@ export function useNotifications(uid) {
 
     const unsubscribe = onSnapshot(notifQuery, (snapshot) => {
       const allNotifications = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setNotifications(allNotifications.filter((n) => n.type === "follow"));
+      setNotifications(allNotifications);
       setLoading(false);
     });
 

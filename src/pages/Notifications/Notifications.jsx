@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Heart, MessageCircle, UserPlus, Mail } from "lucide-react";
+import { Heart, MessageCircle, UserPlus, Mail, ChevronDown, ChevronUp } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useNotifications } from "../../hooks/useNotifications";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import { useFollow } from "../../hooks/useFollow";
+import { usePost } from "../../hooks/usePost";
 
 const NOTIFICATION_TEXT = {
   follow: "started following you",
+  mention: "mentioned you",
   like_post: "liked your post",
   comment: "commented on your post",
   like_comment: "liked your comment",
@@ -15,6 +18,7 @@ const NOTIFICATION_TEXT = {
 
 const NOTIFICATION_ICON = {
   follow: UserPlus,
+  mention: MessageCircle,
   like_post: Heart,
   comment: MessageCircle,
   like_comment: Heart,
@@ -24,6 +28,7 @@ const NOTIFICATION_ICON = {
 function NotificationRow({ notification, onRead, currentUid }) {
   const { profile } = useUserProfile(notification.fromUserId);
   const { isFollowing, toggleFollow } = useFollow(currentUid, notification.fromUserId);
+  const { post } = usePost(notification.postId);
   const Icon = NOTIFICATION_ICON[notification.type] || Heart;
 
   const linkTo =
@@ -31,6 +36,8 @@ function NotificationRow({ notification, onRead, currentUid }) {
       ? `/profile/${notification.fromUserId}`
       : notification.type === "message"
       ? `/messages/${notification.fromUserId}`
+      : notification.postId
+      ? `/post/${notification.postId}`
       : "/";
 
   if (!profile) return null;
@@ -39,6 +46,9 @@ function NotificationRow({ notification, onRead, currentUid }) {
     await toggleFollow();
     if (!notification.read) await onRead(notification.id);
   }
+
+  const isLikePost = notification.type === "like_post";
+  const previewImage = isLikePost && post?.imageURL ? post.imageURL : null;
 
   return (
     <div
@@ -74,6 +84,16 @@ function NotificationRow({ notification, onRead, currentUid }) {
         )}
       </Link>
 
+      {previewImage && (
+        <Link
+          to={linkTo}
+          onClick={() => !notification.read && onRead(notification.id)}
+          className="h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-border bg-surface-2"
+        >
+          <img src={previewImage} alt="Post preview" className="h-full w-full object-cover" />
+        </Link>
+      )}
+
       {notification.type === "follow" && (
         isFollowing ? (
           <Link
@@ -100,6 +120,13 @@ function NotificationRow({ notification, onRead, currentUid }) {
 export default function Notifications() {
   const { user } = useAuth();
   const { notifications, loading, unreadCount, markAsRead, markAllAsRead } = useNotifications(user.uid);
+  const [showAllFollows, setShowAllFollows] = useState(false);
+
+  const followNotifications = notifications.filter((n) => n.type === "follow");
+  const mentionNotifications = notifications.filter((n) => n.type === "mention");
+  const likeNotifications = notifications.filter((n) => n.type === "like_post");
+  const visibleFollowNotifications = showAllFollows ? followNotifications : followNotifications.slice(0, 4);
+  const mentionOrLikeNotifications = mentionNotifications.length > 0 ? mentionNotifications : likeNotifications;
 
   return (
     <div className="mx-auto max-w-2xl p-6">
@@ -120,16 +147,52 @@ export default function Notifications() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        {notifications.map((n) => (
-          <NotificationRow
-            key={n.id}
-            notification={n}
-            onRead={markAsRead}
-            currentUid={user.uid}
-          />
-        ))}
-      </div>
+      {!loading && notifications.length > 0 && (
+        <div className="flex flex-col gap-6">
+          <section className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">Follows</h2>
+
+            {followNotifications.length === 0 ? (
+              <p className="rounded-xl border border-border bg-surface p-3 text-sm text-text-secondary">
+                No new followers yet.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {visibleFollowNotifications.map((n) => (
+                  <NotificationRow key={n.id} notification={n} onRead={markAsRead} currentUid={user.uid} />
+                ))}
+
+                {followNotifications.length > 4 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAllFollows((current) => !current)}
+                    className="mt-1 inline-flex items-center gap-1 self-start text-sm font-medium text-accent hover:text-accent-hover"
+                  >
+                    {showAllFollows ? "Show less" : "See more"}
+                    {showAllFollows ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+                )}
+              </div>
+            )}
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">Mentions</h2>
+
+            {mentionOrLikeNotifications.length === 0 ? (
+              <p className="rounded-xl border border-border bg-surface p-3 text-sm text-text-secondary">
+                No mentions yet.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {mentionOrLikeNotifications.map((n) => (
+                  <NotificationRow key={n.id} notification={n} onRead={markAsRead} currentUid={user.uid} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
     </div>
   );
 }
